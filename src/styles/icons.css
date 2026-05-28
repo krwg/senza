@@ -1,0 +1,72 @@
+.icon-host,
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
+.icon svg,
+.icon-host svg {
+  width: 1.15em;
+  height: 1.15em;
+  flex-shrink: 0;
+}
+
+.icon-lg svg,
+.icon-host.icon-lg svg {
+  width: 22px;
+  height: 22px;
+}
+
+.icon-xl svg,
+.icon-host.icon-xl svg {
+  width: 32px;
+  height: 32px;
+}
+
+.nav-icon.icon-host svg {
+  width: 18px;
+  height: 18px;
+  opacity: 0.85;
+}
+
+.icon-btn.icon-host {
+  padding: 0;
+}
+
+.icon-btn.icon-host svg {
+  width: 16px;
+  height: 16px;
+}
+
+.icon-btn-lg.icon-host svg {
+  width: 18px;
+  height: 18px;
+}
+
+.win-btn.icon-host svg {
+  width: 14px;
+  height: 14px;
+}
+
+.card-art.icon-host,
+.np-art.icon-host {
+  color: var(--text-muted);
+}
+
+.card-art.icon-host svg {
+  width: 36px;
+  height: 36px;
+  opacity: 0.9;
+}
+
+.grid-cards.collection .card-art.icon-host svg {
+  width: 48px;
+  height: 48px;
+}
+
+.np-art.icon-host svg {
+  width: 24px;
+  height: 24px;
+}

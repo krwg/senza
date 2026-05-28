@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' file: blob: data:; media-src file: blob:;">
+  <title>Senza</title>
+  <link rel="icon" type="image/svg+xml" href="./icon.svg">
+  <link rel="stylesheet" href="./styles/tokens.css">
+  <link rel="stylesheet" href="./styles/icons.css">
+  <link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+  <div id="app" class="app">
+    <header class="window-chrome">
+      <div class="window-chrome-left">
+        <div class="brand-wordmark chrome-brand">SEN<span>Z</span>A</div>
+      </div>
+      <div class="window-chrome-center">
+        <input type="search" id="searchInput" class="search-input" placeholder="Search…" data-i18n-placeholder="search.placeholder">
+      </div>
+      <div class="window-controls">
+        <button type="button" class="profile-chrome-btn" id="profileChromeBtn" title="" aria-label="Profile">
+          <img id="profileChromeAvatar" width="28" height="28" alt="">
+        </button>
+        <button type="button" class="win-btn icon-host" id="winMin" data-i18n-title="win.minimize" title="Minimize" aria-label="Minimize"></button>
+        <button type="button" class="win-btn icon-host" id="winMax" data-i18n-title="win.maximize" title="Maximize" aria-label="Maximize"></button>
+        <button type="button" class="win-btn win-btn-close icon-host" id="winClose" data-i18n-title="win.close" title="Close" aria-label="Close"></button>
+      </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+      <nav class="sidebar-nav" id="sidebarNav"></nav>
+      <div class="sidebar-footer">
+        <button type="button" class="nav-item" data-view="collection">
+          <span class="nav-icon icon-host" data-icon="collection"></span>
+          <span data-i18n="nav.collection">Collection</span>
+        </button>
+        <button type="button" class="nav-item" data-view="vault">
+          <span class="nav-icon icon-host" data-icon="vault"></span>
+          <span data-i18n="nav.vault">Music Vault</span>
+        </button>
+        <button type="button" class="nav-item" data-view="import">
+          <span class="nav-icon icon-host" data-icon="import"></span>
+          <span data-i18n="nav.import">Import</span>
+        </button>
+        <button type="button" class="nav-item" data-view="settings">
+          <span class="nav-icon icon-host" data-icon="settings"></span>
+          <span data-i18n="nav.settings">Settings</span>
+        </button>
+      </div>
+    </aside>
+
+    <div class="main-column">
+      <main class="content" id="content"></main>
+      <aside class="queue-panel hidden" id="queuePanel">
+        <div class="queue-head">
+          <h2 data-i18n="queue.title">Next Up</h2>
+          <button type="button" class="icon-btn icon-host" id="queueClose" data-icon="close" aria-label="Close"></button>
+        </div>
+        <ul class="queue-list" id="queueList"></ul>
+      </aside>
+    </div>
+
+    <footer class="player-bar" id="playerBar">
+      <div class="player-progress-row">
+        <span class="player-time" id="timeCurrent">0:00</span>
+        <input type="range" id="progressBar" class="range-input range-progress" min="0" max="100" value="0" step="0.25" aria-label="Seek">
+        <span class="player-time" id="timeTotal">0:00</span>
+      </div>
+      <div class="player-main-row">
+        <button type="button" class="now-playing" id="nowPlayingBtn" aria-label="Now playing">
+          <div class="np-art icon-host icon-lg" id="npArt" data-icon="music"></div>
+          <div class="np-meta">
+            <div class="np-title" id="npTitle">—</div>
+            <div class="np-artist" id="npArtist">—</div>
+          </div>
+        </button>
+        <div class="player-controls">
+          <button type="button" class="icon-btn icon-host" id="btnPrev" data-icon="prev" aria-label="Previous"></button>
+          <button type="button" class="icon-btn icon-btn-lg icon-host" id="btnPlay" data-icon="play" aria-label="Play"></button>
+          <button type="button" class="icon-btn icon-host" id="btnNext" data-icon="next" aria-label="Next"></button>
+        </div>
+        <div class="player-extra">
+          <button type="button" class="icon-btn icon-host" id="btnQueue" data-icon="queue" title="Queue" aria-label="Queue"></button>
+          <input type="range" id="volume" min="0" max="1" step="0.01" value="0.85" class="range-input range-volume" aria-label="Volume">
+        </div>
+      </div>
+      <audio id="audio" preload="metadata"></audio>
+    </footer>
+  </div>
+
+  <div class="now-playing-overlay hidden" id="nowPlayingOverlay">
+    <div class="np-overlay-backdrop" id="npOverlayBackdrop"></div>
+    <div class="now-playing-panel" id="nowPlayingPanel">
+      <header class="np-panel-head">
+        <button type="button" class="icon-btn icon-host" id="npCollapse" aria-label="Close"></button>
+        <span class="np-panel-label" data-i18n="player.nowPlaying">Now Playing</span>
+        <button type="button" class="icon-btn icon-host" id="npFullscreen" aria-label="Full screen"></button>
+      </header>
+      <div class="np-panel-body">
+        <div class="np-panel-art icon-host icon-xl" id="npPanelArt" data-icon="music"></div>
+        <h2 class="np-panel-title" id="npPanelTitle">—</h2>
+        <p class="np-panel-artist" id="npPanelArtist">—</p>
+        <p class="np-panel-album" id="npPanelAlbum">—</p>
+        <div class="np-panel-progress">
+          <span class="player-time" id="timeCurrentPanel">0:00</span>
+          <input type="range" id="progressBarPanel" class="range-input range-progress" min="0" max="100" value="0" step="0.25" aria-label="Seek">
+          <span class="player-time" id="timeTotalPanel">0:00</span>
+        </div>
+        <div class="np-panel-controls">
+          <button type="button" class="icon-btn icon-host" id="btnPrevPanel" aria-label="Previous"></button>
+          <button type="button" class="icon-btn icon-btn-lg icon-host" id="btnPlayPanel" aria-label="Play"></button>
+          <button type="button" class="icon-btn icon-host" id="btnNextPanel" aria-label="Next"></button>
+        </div>
+      </div>
+    </div>
+    <div class="fullscreen-player hidden" id="fullscreenPlayer">
+      <div class="fs-backdrop" id="fsBackdrop"></div>
+      <div class="fs-inner">
+        <button type="button" class="icon-btn icon-host fs-close" id="fsClose" aria-label="Close"></button>
+        <div class="fs-art icon-host icon-xl" id="fsArt" data-icon="music"></div>
+        <h1 class="fs-title" id="fsTitle">—</h1>
+        <p class="fs-artist" id="fsArtist">—</p>
+        <p class="fs-album" id="fsAlbum">—</p>
+        <div class="fs-progress">
+          <span class="player-time" id="timeCurrentFs">0:00</span>
+          <input type="range" id="progressBarFs" class="range-input range-progress" min="0" max="100" value="0" step="0.25" aria-label="Seek">
+          <span class="player-time" id="timeTotalFs">0:00</span>
+        </div>
+        <div class="fs-controls">
+          <button type="button" class="icon-btn icon-host" id="btnPrevFs" aria-label="Previous"></button>
+          <button type="button" class="icon-btn icon-btn-lg icon-host" id="btnPlayFs" aria-label="Play"></button>
+          <button type="button" class="icon-btn icon-host" id="btnNextFs" aria-label="Next"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aside id="tagEditor" class="tag-editor hidden">
+    <div class="tag-editor-head">
+      <h2 data-i18n="tags.title">Tag Editor</h2>
+      <button type="button" class="icon-btn icon-host" id="tagEditorClose" data-icon="close" aria-label="Close"></button>
+    </div>
+    <div class="tag-assistant" id="tagAssistant"></div>
+    <form id="tagForm" class="tag-form">
+      <label><span data-i18n="tags.titleField">Title</span><input name="title" id="tagTitle"></label>
+      <label><span data-i18n="tags.artist">Artist</span><input name="artist" id="tagArtist"></label>
+      <label><span data-i18n="tags.album">Album</span><input name="album" id="tagAlbum"></label>
+      <label><span data-i18n="tags.genre">Genre</span><input name="genre" id="tagGenre"></label>
+      <label><span data-i18n="tags.year">Year</span><input name="year" id="tagYear" type="number"></label>
+      <label><span data-i18n="tags.track">Track #</span><input name="trackNo" id="tagTrackNo" type="number"></label>
+      <div class="tag-cover-preview hidden" id="tagCoverPreviewWrap">
+        <img id="tagCoverPreview" alt="" width="80" height="80">
+      </div>
+      <input type="file" id="coverFileInput" class="hidden" accept="image/*">
+      <div class="tag-form-actions">
+        <button type="button" class="btn" id="tagSuggest" data-i18n="tags.suggest">Smart suggest</button>
+        <button type="button" class="btn" id="tagCover" data-i18n="tags.cover">Cover…</button>
+        <button type="submit" class="btn btn-primary" data-i18n="tags.save">Save tags</button>
+      </div>
+      <p class="tag-hint" id="tagHint" data-i18n="tags.mp3hint">MP3 tag writing supported. Other formats: read-only for now.</p>
+    </form>
+  </aside>
+
+  <div class="drop-overlay hidden" id="dropOverlay">
+    <p data-i18n="import.drop">Drop audio files to import</p>
+  </div>
+
+  <div class="cover-crop-modal hidden" id="coverCropModal">
+    <div class="cover-crop-backdrop" id="coverCropBackdrop"></div>
+    <div class="cover-crop-panel">
+      <h3 data-i18n="cover.title">Album cover</h3>
+      <p class="cover-crop-hint" data-i18n="cover.hint">Drag to reposition · square crop</p>
+      <canvas id="coverCropCanvas" width="360" height="360"></canvas>
+      <label class="cover-crop-zoom-label">
+        <span data-i18n="cover.zoom">Zoom</span>
+        <input type="range" id="coverCropZoom" min="1" max="2.5" step="0.02" value="1" class="range-input">
+      </label>
+      <div class="cover-crop-previews">
+        <div>
+          <span data-i18n="cover.preview">Preview</span>
+          <canvas id="coverCropPreview" width="112" height="112"></canvas>
+        </div>
+        <div>
+          <span data-i18n="cover.player">Player</span>
+          <canvas id="coverCropPlayerPreview" width="52" height="52"></canvas>
+        </div>
+      </div>
+      <div class="cover-crop-actions">
+        <button type="button" class="btn" id="coverCropCancel" data-i18n="cover.cancel">Cancel</button>
+        <button type="button" class="btn btn-primary" id="coverCropConfirm" data-i18n="cover.apply">Apply cover</button>
+      </div>
+    </div>
+  </div>
+
+  <menu class="track-context-menu hidden" id="trackContextMenu">
+    <button type="button" data-ctx="play" data-i18n="ctx.play">Play</button>
+    <button type="button" data-ctx="playlist" data-i18n="ctx.playlist">Add to playlist</button>
+    <button type="button" data-ctx="tags" data-i18n="ctx.tags">Edit tags</button>
+    <button type="button" data-ctx="lock" data-i18n="ctx.lock">Lock clicks</button>
+  </menu>
+
+  <div class="playlist-picker hidden" id="playlistPicker">
+    <div class="playlist-picker-backdrop" id="playlistPickerBackdrop"></div>
+    <div class="playlist-picker-panel">
+      <h3 data-i18n="playlists.add">Add to playlist</h3>
+      <ul class="playlist-picker-list" id="playlistPickerList"></ul>
+      <p class="playlist-picker-empty hidden" id="playlistPickerEmpty"></p>
+      <button type="button" class="btn" id="playlistPickerClose" data-i18n="common.close">Close</button>
+    </div>
+  </div>
+
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>

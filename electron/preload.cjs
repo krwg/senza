@@ -1,0 +1,28 @@
+const { contextBridge, ipcRenderer } = require('electron');
+
+contextBridge.exposeInMainWorld('senza', {
+  getState: () => ipcRenderer.invoke('senza:get-state'),
+  saveState: (state) => ipcRenderer.invoke('senza:save-state', state),
+  getLibraryRoot: () => ipcRenderer.invoke('senza:get-library-root'),
+  pickFiles: () => ipcRenderer.invoke('senza:pick-files'),
+  pickFolder: () => ipcRenderer.invoke('senza:pick-folder'),
+  importPaths: (paths) => ipcRenderer.invoke('senza:import-paths', paths),
+  openPath: (filePath) => ipcRenderer.invoke('senza:open-path', filePath),
+  fileUrl: (filePath) => ipcRenderer.invoke('senza:file-url', filePath),
+  coverUrl: (trackId) => ipcRenderer.invoke('senza:cover-url', trackId),
+  windowMinimize: () => ipcRenderer.invoke('senza:window-minimize'),
+  windowToggleMaximize: () => ipcRenderer.invoke('senza:window-toggle-maximize'),
+  windowClose: () => ipcRenderer.invoke('senza:window-close'),
+  readTags: (filePath) => ipcRenderer.invoke('senza:read-tags', filePath),
+  writeTags: (payload) => ipcRenderer.invoke('senza:write-tags', payload),
+  pickCover: () => ipcRenderer.invoke('senza:pick-cover'),
+  readFileBinary: (filePath) => ipcRenderer.invoke('senza:read-file-binary', filePath),
+  libraryTree: () => ipcRenderer.invoke('senza:library-tree'),
+  profileGet: () => ipcRenderer.invoke('senza:profile-get'),
+  profileSave: (profile) => ipcRenderer.invoke('senza:profile-save', profile),
+  profileAvatarUrl: () => ipcRenderer.invoke('senza:profile-avatar-url'),
+  playlistsList: () => ipcRenderer.invoke('senza:playlists-list'),
+  playlistCreate: (name) => ipcRenderer.invoke('senza:playlist-create', name),
+  playlistSave: (playlist) => ipcRenderer.invoke('senza:playlist-save', playlist),
+  playlistDelete: (slug) => ipcRenderer.invoke('senza:playlist-delete', slug),
+});

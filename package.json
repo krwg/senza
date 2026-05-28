@@ -1,0 +1,73 @@
+{
+  "name": "senza",
+  "version": "0.1.0",
+  "description": "Offline-first music library and player — your collection, your files.",
+  "main": "electron/main.cjs",
+  "type": "module",
+  "author": "Floke (krwg)",
+  "homepage": "https://github.com/FlokeStudio/Senza",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "sync:version": "node scripts/sync-version.mjs",
+    "build:icons": "node scripts/build-icons.mjs",
+    "electron:dev": "npm run build:icons && npm run build && cross-env NODE_ENV=development VITE_DEV_SERVER_URL=http://localhost:5173 electron .",
+    "electron:dev:watch": "npm run build:icons && concurrently \"vite\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development VITE_DEV_SERVER_URL=http://localhost:5173 electron .\"",
+    "electron:build": "npm run sync:version && npm run build && npm run build:icons && electron-builder",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "studio.floke.senza",
+    "productName": "Senza",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "icon": "build/icon.ico",
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "Senza-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "Senza"
+    },
+    "portable": {
+      "artifactName": "Senza-${version}-Portable.${ext}"
+    }
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3",
+    "sharp": "^0.33.5",
+    "to-ico": "^1.1.5",
+    "vite": "^5.4.21",
+    "wait-on": "^7.2.0"
+  },
+  "dependencies": {
+    "music-metadata": "^10.7.0",
+    "node-id3": "^0.2.6"
+  }
+}

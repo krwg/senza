@@ -1,0 +1,21 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+
+  
+
+  <circle cx="256" cy="256" r="240" fill="none" stroke="#c8a96e" stroke-width="18"/>
+  
+
+  <path d="M 180 256 
+           C 180 200, 210 170, 256 170 
+           C 302 170, 332 200, 332 256 
+           C 332 312, 302 342, 256 342 
+           C 210 342, 180 312, 180 256 Z" 
+        fill="none" 
+        stroke="#c8a96e" 
+        stroke-width="28" 
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+  
+
+  <circle cx="256" cy="256" r="32" fill="#c8a96e"/>
+</svg>
