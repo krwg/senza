@@ -6,7 +6,10 @@ const crypto = require('crypto');
 const fs = require('fs/promises');
 const { readTags, writeTags } = require('./tags.cjs');
 const { resolveLibraryAudioPath } = require('./import.cjs');
+const { normalizeImportMeta } = require('./glyph-import-meta.cjs');
+const { extractGlyphFeatures } = require('./glyph-features.cjs');
 const { saveCoverFile, coverExists, extractAndStoreCover, getCoverPath } = require('./covers.cjs');
+const { saveArtistAvatar, artistAvatarUrl } = require('./artist-avatars.cjs');
 const { getLibraryTree } = require('./library-tree.cjs');
 const fsSync = require('fs');
 const {
@@ -15,6 +18,39 @@ const {
   savePlaylist,
   deletePlaylist,
 } = require('./playlists.cjs');
+const {
+  ensureGlyphDirs,
+  appendLearnEntry,
+  getLearnStats,
+  exportLearnBundle,
+  buildEntryFromTrack,
+} = require('./glyph-learn.cjs');
+const {
+  getGlyphMiStatus,
+  glyphAnalyze,
+  glyphVaultScan,
+  glyphReloadKnowledge,
+} = require('./glyph-mi.cjs');
+const {
+  musicBrainzLookup,
+  acoustidLookup,
+  fingerprintFile,
+  downloadChromaprintTools,
+  getOnlineStatus,
+} = require('./glyph-online.cjs');
+const { importExportToPrivatePack } = require('./glyph-import.cjs');
+const {
+  upsertTrackFeatures,
+  upsertManyTracks,
+  getLibraryFeatureRows,
+} = require('./glyph-db.cjs');
+const { rebuildLearnedPack, loadLearnedPack } = require('./glyph-learn-rules.cjs');
+const {
+  logEvent: logGlyphSqlEvent,
+  getLogStats: getGlyphLogStats,
+  getAnalytics: getGlyphAnalytics,
+  writeDatasetExport: exportGlyphDataset,
+} = require('./glyph-log-db.cjs');
 
 const isDev = process.env.NODE_ENV === 'development';
 const AUDIO_EXT = new Set(['.mp3', '.flac', '.wav', '.ogg', '.m4a', '.aac']);
@@ -44,6 +80,8 @@ async function ensureLibrary() {
   await fs.mkdir(path.join(root, 'music'), { recursive: true });
   await fs.mkdir(path.join(root, 'covers'), { recursive: true });
   await fs.mkdir(path.join(root, 'playlists'), { recursive: true });
+  await fs.mkdir(path.join(root, 'artists'), { recursive: true });
+  await ensureGlyphDirs(root);
   return root;
 }
 
@@ -132,6 +170,8 @@ async function importPaths(paths) {
       };
     }
 
+    meta = normalizeImportMeta(filePath, meta);
+
     let libraryPath;
     try {
       libraryPath = await resolveLibraryAudioPath(libraryRoot, filePath, meta);
@@ -144,6 +184,13 @@ async function importPaths(paths) {
     if (existingPaths.has(norm)) {
       skipped.push({ filePath, reason: 'already in library' });
       continue;
+    }
+
+    let glyphFeatures = null;
+    try {
+      glyphFeatures = await extractGlyphFeatures(libraryPath, meta);
+    } catch {
+      /* optional */
     }
 
     const track = {
@@ -159,6 +206,7 @@ async function importPaths(paths) {
       duration: meta.duration || 0,
       hasCover: false,
       addedAt: new Date().toISOString(),
+      glyph: glyphFeatures,
     };
     const storedCover = await extractAndStoreCover(libraryRoot, track);
     track.hasCover = meta.hasCover || storedCover;
@@ -168,7 +216,10 @@ async function importPaths(paths) {
   }
 
   await saveState(state);
-  return { added, skipped, total: state.tracks.length };
+  if (added.length) {
+    upsertManyTracks(libraryRoot, added).catch(() => {});
+  }
+  return { added: added.map((t) => t.id), skipped, total: state.tracks.length };
 }
 
 function createWindow() {
@@ -205,6 +256,152 @@ app.whenReady().then(async () => {
   ipcMain.handle('senza:get-state', loadState);
   ipcMain.handle('senza:save-state', (_, state) => saveState(state));
   ipcMain.handle('senza:get-library-root', () => getLibraryRoot());
+
+  ipcMain.handle('senza:glyph-learn-log', async (_, payload) => {
+    const libraryRoot = getLibraryRoot();
+    const state = await loadState();
+    const track = state.tracks.find((t) => t.id === payload.trackId) || {
+      id: payload.trackId,
+      path: payload.path || '',
+    };
+    const entry = buildEntryFromTrack(track, libraryRoot, {
+      event: payload.event,
+      before: payload.before,
+      suggested: payload.suggested,
+      after: payload.after,
+      glyph: payload.glyph,
+      accepted: payload.accepted,
+      contributorId: payload.contributorId || '',
+    });
+    await appendLearnEntry(libraryRoot, entry);
+    const ev = String(payload.event || '');
+    if (ev.includes('apply') || ev === 'tag-save' || ev === 'tag_save') {
+      rebuildLearnedPack(libraryRoot).catch(() => {});
+    }
+    return { ok: true };
+  });
+
+  ipcMain.handle('senza:glyph-log', async (_, payload) => {
+    const libraryRoot = getLibraryRoot();
+    const state = await loadState();
+    const track =
+      state.tracks.find((t) => t.id === payload.track?.id || t.id === payload.trackId) ||
+      payload.track || { id: payload.trackId, path: '' };
+    const result = await logGlyphSqlEvent(libraryRoot, { ...payload, track });
+    const ev = String(payload.event || '');
+    if (
+      result.ok &&
+      (ev.includes('glyph.apply') || ev === 'glyph.auto' || ev === 'tag-save')
+    ) {
+      rebuildLearnedPack(libraryRoot).catch(() => {});
+    }
+    return result;
+  });
+
+  ipcMain.handle('senza:glyph-log-stats', async () => {
+    const libraryRoot = getLibraryRoot();
+    return getGlyphLogStats(libraryRoot);
+  });
+
+  ipcMain.handle('senza:glyph-log-export-dataset', async (_, opts = {}) => {
+    const libraryRoot = getLibraryRoot();
+    return exportGlyphDataset(libraryRoot, opts);
+  });
+
+  ipcMain.handle('senza:glyph-analytics', async () => {
+    const libraryRoot = getLibraryRoot();
+    const state = await loadState();
+    return getGlyphAnalytics(libraryRoot, { trackCount: state.tracks?.length ?? 0 });
+  });
+
+  ipcMain.handle('senza:glyph-learn-stats', async () => {
+    const libraryRoot = getLibraryRoot();
+    return getLearnStats(libraryRoot);
+  });
+
+  ipcMain.handle('senza:glyph-learn-export', async (_, { contributorId, note } = {}) => {
+    const libraryRoot = getLibraryRoot();
+    const result = await exportLearnBundle(libraryRoot, { contributorId, note });
+    return result;
+  });
+
+  ipcMain.handle('senza:glyph-open-exports', async () => {
+    const libraryRoot = getLibraryRoot();
+    const { exportsDir } = require('./glyph-learn.cjs');
+    const dir = exportsDir(libraryRoot);
+    await fs.mkdir(dir, { recursive: true });
+    await shell.openPath(dir);
+    return dir;
+  });
+
+  ipcMain.handle('senza:glyph-mi-status', (_, { force } = {}) => getGlyphMiStatus(Boolean(force)));
+
+  ipcMain.handle('senza:glyph-analyze', async (_, input) => glyphAnalyze(input));
+
+  ipcMain.handle('senza:glyph-vault-scan', async (_, { tracks, maxFixPreview } = {}) => {
+    const state = tracks?.length ? null : await loadState();
+    const list = tracks || state?.tracks || [];
+    return glyphVaultScan(list, { maxFixPreview });
+  });
+
+  ipcMain.handle('senza:glyph-reload-knowledge', () => glyphReloadKnowledge());
+
+  ipcMain.handle('senza:glyph-musicbrainz-lookup', async (_, query) => {
+    const libraryRoot = getLibraryRoot();
+    return musicBrainzLookup(libraryRoot, query || {});
+  });
+
+  ipcMain.handle('senza:glyph-acoustid-lookup', async (_, payload) => {
+    const libraryRoot = getLibraryRoot();
+    const state = await loadState();
+    const settings = state.settings || {};
+    return acoustidLookup(libraryRoot, {
+      filePath: payload?.filePath,
+      duration: payload?.duration,
+      apiKey: payload?.apiKey || settings.acoustidApiKey || process.env.ACOUSTID_API_KEY,
+    });
+  });
+
+  ipcMain.handle('senza:glyph-online-status', async () => getOnlineStatus());
+
+  ipcMain.handle('senza:glyph-fingerprint', async (_, payload) => {
+    const libraryRoot = getLibraryRoot();
+    return fingerprintFile(libraryRoot, { filePath: payload?.filePath });
+  });
+
+  ipcMain.handle('senza:glyph-download-tools', async () => downloadChromaprintTools());
+
+  ipcMain.handle('senza:glyph-import-export', async () => {
+    const libraryRoot = getLibraryRoot();
+    return importExportToPrivatePack(libraryRoot);
+  });
+
+  ipcMain.handle('senza:glyph-library-features', async () => {
+    const libraryRoot = getLibraryRoot();
+    return getLibraryFeatureRows(libraryRoot);
+  });
+
+  ipcMain.handle('senza:glyph-db-upsert', async (_, { track }) => {
+    const libraryRoot = getLibraryRoot();
+    return upsertTrackFeatures(libraryRoot, track);
+  });
+
+  ipcMain.handle('senza:glyph-db-sync', async (_, { tracks } = {}) => {
+    const libraryRoot = getLibraryRoot();
+    const state = tracks?.length ? null : await loadState();
+    const list = tracks || state?.tracks || [];
+    return upsertManyTracks(libraryRoot, list);
+  });
+
+  ipcMain.handle('senza:glyph-learned-pack', async () => {
+    const libraryRoot = getLibraryRoot();
+    return loadLearnedPack(libraryRoot);
+  });
+
+  ipcMain.handle('senza:glyph-rebuild-learned', async () => {
+    const libraryRoot = getLibraryRoot();
+    return rebuildLearnedPack(libraryRoot);
+  });
 
   ipcMain.handle('senza:pick-files', async () => {
     const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
@@ -293,6 +490,7 @@ app.whenReady().then(async () => {
       hasCover: track.hasCover || updated.hasCover || (await coverExists(libraryRoot, track.id)),
     });
     await saveState(state);
+    upsertTrackFeatures(libraryRoot, track).catch(() => {});
     return track;
   });
 
@@ -335,6 +533,90 @@ app.whenReady().then(async () => {
     if (!filePath || !existsSync(filePath)) return null;
     const buf = await fs.readFile(filePath);
     return Array.from(buf);
+  });
+
+  ipcMain.handle('senza:artist-avatar-url', async (_, slug) => {
+    const root = await ensureLibrary();
+    return artistAvatarUrl(root, slug);
+  });
+
+  ipcMain.handle('senza:artist-avatar-save', async (_, { slug, buffer }) => {
+    const root = await ensureLibrary();
+    if (!slug || !buffer?.length) throw new Error('Invalid artist avatar');
+    await saveArtistAvatar(root, slug, Buffer.from(buffer));
+    return { ok: true };
+  });
+
+  ipcMain.handle('senza:confirm-bulk-remove', async (_, { count, locale }) => {
+    const ru = locale === 'ru';
+    const { response } = await dialog.showMessageBox(mainWindow, {
+      type: 'warning',
+      title: ru ? 'Удалить треки' : 'Remove tracks',
+      message: ru ? `Удалить ${count} треков из Senza?` : `Remove ${count} tracks from Senza?`,
+      detail: ru
+        ? '«Только из списка» — файлы останутся. «Удалить файлы» — удалит аудио из папки библиотеки.'
+        : '“Remove from list” keeps files on disk. “Delete files” removes audio from your library folder.',
+      buttons: ru
+        ? ['Отмена', 'Только из списка', 'Удалить файлы']
+        : ['Cancel', 'Remove from list', 'Delete files'],
+      defaultId: 0,
+      cancelId: 0,
+    });
+    if (response === 0) return null;
+    return { deleteFile: response === 2 };
+  });
+
+  ipcMain.handle('senza:confirm-remove-track', async (_, { locale }) => {
+    const ru = locale === 'ru';
+    const { response } = await dialog.showMessageBox(mainWindow, {
+      type: 'warning',
+      title: ru ? 'Удалить трек' : 'Remove track',
+      message: ru ? 'Убрать трек из Senza?' : 'Remove this track from Senza?',
+      detail: ru
+        ? '«Только из списка» — файл останется на диске. «Удалить файл» — удалит аудио из папки библиотеки.'
+        : '“Remove from list” keeps the file on disk. “Delete file” removes the audio from your library folder.',
+      buttons: ru
+        ? ['Отмена', 'Только из списка', 'Удалить файл']
+        : ['Cancel', 'Remove from list', 'Delete file'],
+      defaultId: 0,
+      cancelId: 0,
+    });
+    if (response === 0) return null;
+    return { deleteFile: response === 2 };
+  });
+
+  ipcMain.handle('senza:remove-track', async (_, { trackId, deleteFile }) => {
+    const state = await loadState();
+    const root = await ensureLibrary();
+    const idx = state.tracks.findIndex((t) => t.id === trackId);
+    if (idx < 0) throw new Error('Track not found');
+    const track = state.tracks[idx];
+
+    for (const pl of state.playlists) {
+      if (pl.trackIds?.includes(trackId)) {
+        pl.trackIds = pl.trackIds.filter((id) => id !== trackId);
+        await savePlaylist(root, pl);
+      }
+    }
+
+    state.tracks.splice(idx, 1);
+    state.queue = (state.queue || []).filter((id) => id !== trackId);
+    if (state.queueIndex >= state.queue.length) {
+      state.queueIndex = Math.max(0, state.queue.length - 1);
+    }
+    state.playHistory = (state.playHistory || []).filter((e) => e.trackId !== trackId);
+
+    const coverPath = getCoverPath(root, trackId);
+    if (existsSync(coverPath)) {
+      await fs.unlink(coverPath).catch(() => {});
+    }
+
+    if (deleteFile && track.path && existsSync(track.path)) {
+      await fs.unlink(track.path).catch(() => {});
+    }
+
+    await saveState(state);
+    return { ok: true };
   });
 
   ipcMain.handle('senza:profile-avatar-url', async () => {

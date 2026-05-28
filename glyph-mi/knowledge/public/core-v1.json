@@ -1,0 +1,36 @@
+{
+  "format": "glyph-knowledge-pack",
+  "version": 1,
+  "id": "floke-core-v1",
+  "description": "Public starter knowledge for Glyph MI — safe for all users.",
+  "artistAliases": [
+    { "match": "Unknown Artist", "artist": "" }
+  ],
+  "junkPatterns": [
+    { "pattern": "(copy)" },
+    { "pattern": "(копия)" },
+    { "pattern": " - copy" },
+    { "pattern": "_copy" },
+    { "pattern": "(1)" },
+    { "pattern": "(2)" },
+    { "pattern": "duplicate" }
+  ],
+  "genreHints": [
+    { "pattern": "classical", "genre": "Classical" },
+    { "pattern": "soundtrack", "genre": "Soundtrack" },
+    { "pattern": "lofi", "genre": "Lo-Fi" },
+    { "pattern": "lo-fi", "genre": "Lo-Fi" },
+    { "pattern": "hip hop", "genre": "Hip-Hop" },
+    { "pattern": "hip-hop", "genre": "Hip-Hop" },
+    { "pattern": "electronic", "genre": "Electronic" },
+    { "pattern": "ambient", "genre": "Ambient" },
+    { "pattern": "jazz", "genre": "Jazz" },
+    { "pattern": "metal", "genre": "Metal" },
+    { "pattern": "punk", "genre": "Punk" },
+    { "pattern": "indie", "genre": "Indie" },
+    { "pattern": "r&b", "genre": "R&B" },
+    { "pattern": "k-pop", "genre": "K-Pop" },
+    { "pattern": "kpop", "genre": "K-Pop" }
+  ],
+  "examples": []
+}

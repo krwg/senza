@@ -13,6 +13,34 @@ export function gradientForTrack(track) {
   return `linear-gradient(145deg, hsl(${h1}, 42%, 32%) 0%, hsl(${h2}, 38%, 18%) 100%)`;
 }
 
+export function gradientForArtist(name) {
+  return gradientForTrack({ artist: name || '', album: '', title: name || '' });
+}
+
+export function applyArtistPortrait(el, name, imageUrl) {
+  if (!el) return;
+  el.classList.add('artist-portrait');
+  let img = el.querySelector('.artist-portrait-img');
+  if (!imageUrl) {
+    img?.remove();
+    applyArtworkElement(el, { artist: name, album: '', title: name }, null);
+    return;
+  }
+  el.classList.remove('has-gradient');
+  el.classList.add('has-cover');
+  el.style.backgroundImage = '';
+  if (!img) {
+    img = document.createElement('img');
+    img.className = 'artist-portrait-img';
+    img.alt = name ? `${name}` : '';
+    img.decoding = 'async';
+    el.insertBefore(img, el.firstChild);
+  }
+  img.src = imageUrl;
+  img.removeAttribute('width');
+  img.removeAttribute('height');
+}
+
 export function applyArtworkElement(el, track, imageUrl) {
   if (!el) return;
   el.classList.remove('has-cover', 'has-gradient');

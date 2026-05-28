@@ -73,11 +73,12 @@ Think of it as **your shelf, digitized**: one calm place to import, organize, fi
 
 ### Works today · Coming later
 
-| Today (0.1.0 Coda) | Planned |
+| Today (1.0.0 Vivo) | Planned |
 |--------------------|---------|
-| Windows desktop | iOS companion (roadmap) |
-| MP3 tag + cover write | Full tag write for FLAC and more |
-| Local playlists as folders | Bulk tag editor, portable library export |
+| Windows desktop + Glyph2.1-O | iOS companion (roadmap) |
+| Flow home, Journal stats, bulk tags | Full tag write for FLAC and more |
+| MP3 tag + cover + SQLite Glyph log | Portable `senza-library.zip` export |
+| MusicBrainz / optional AcoustID / Ollama | Librosa BPM at import |
 
 ---
 
@@ -86,31 +87,54 @@ Think of it as **your shelf, digitized**: one calm place to import, organize, fi
 | | |
 |---|---|
 | **What** | Offline music library + player (Electron) |
-| **Release** | **0.1.0 — Coda** ([`CHANGELOG.md`](CHANGELOG.md) · [Releases](https://github.com/FlokeStudio/Senza/releases)) |
-| **Codename** | **Coda** — first desktop chord |
+| **Release** | **1.0.0 — Vivo** ([`CHANGELOG.md`](CHANGELOG.md) · [Releases](https://github.com/FlokeStudio/Senza/releases)) |
+| **Codename** | **Vivo** — living library, metadata that breathes |
 | **Account** | None |
 | **Network** | Not required for playback |
 | **UI** | Dark/light · **EN / RU** · Monocraft wordmark · SF-style icons |
 
 <h3 id="en-features">Features</h3>
 
+#### Library & playback
+
 | Feature | Description |
 |---------|-------------|
-| **Import** | Files, folder, drag & drop → `library/music/Artist/Album/` |
-| **Formats** | mp3, flac, wav, ogg, m4a, aac (playback); MP3 ID3 write |
-| **Views** | All Tracks, Albums, Artists, Playlists, Collection mode |
-| **Music Vault** | Collection Score /100 — tags, covers, attention list |
+| **Import** | Files, folder, drag & drop → `library/music/Artist/Album/`; import-time path normalization |
+| **Formats** | mp3, flac, wav, ogg, m4a, aac (playback); **MP3 ID3 write** |
+| **Views** | **Flow** (home), All Tracks, Albums, Artists, Playlists, **Collection** (large cards) |
+| **Music Vault** | Collection Score /100; attention & no-cover lists; infer albums from folders |
 | **Search** | Instant filter across title, artist, album |
-| **Queue** | Next Up, reorder, persist between sessions |
-| **Player** | Now Playing overlay, fullscreen, volume |
-| **Tag editor** | Fields + Smart Metadata Assistant |
-| **Covers** | Any image → crop → sidecar + embed (MP3) |
+| **Sort** | Tracks, albums, artists — key + direction |
+| **Queue** | Next Up, drag reorder, persist between sessions |
+| **Player** | Bottom bar + **Now Playing** sheet + **fullscreen** (centered in content area) |
+| **Bulk editor** | Multi-select tracks → shared tag fields |
 | **Playlists** | Real folders + `playlist.json` |
 | **Album Focus** | Album detail + play all |
-| **Journal** | History, weekly tops, Time Capsule |
-| **Profile** | Identicon 32×32, custom avatar & name |
-| **Settings** | Appearance, library path, folder tree, playback, profile, journal, about |
-| **Window** | Custom chrome (min / max / close) |
+| **Artist photos** | Local portrait per artist (offline) |
+| **Profile** | Identicon or custom avatar & display name in title bar |
+| **Window** | Custom chrome (min / max / close) · **EN / RU** |
+
+#### Glyph2.1-O (built-in, can be disabled)
+
+| Feature | Description |
+|---------|-------------|
+| **Pipeline** | Rules, knowledge packs, ML heuristics, **KNN**, optional **MusicBrainz / AcoustID / Ollama** |
+| **Tag editor** | Score, source badges, **diff view**, per-field chips, apply / reject / re-run |
+| **Auto-tag import** | Optional fill after import |
+| **Vault scan** | Suggested fixes, **duplicate groups** (tags, filename, optional fingerprint) |
+| **Batch** | “Fill library” — scan, preview, apply many tracks |
+| **Logging** | SQLite `glyph-log.sqlite` + export **JSONL** for fine-tune |
+| **Learning** | User edits + exports → private knowledge pack |
+| **Toggle off** | Plain tag editor; **SENZA** on Flow; no Glyph vault scan |
+
+#### Flow & Journal
+
+| Feature | Description |
+|---------|-------------|
+| **Flow** | Personal wave (~32 tracks), 4 modes, cover-driven ambient, BPM pulse |
+| **Journal** | **Settings → Journal** — time in app, listening time, weekly top artists & **tracks**, Time Capsule |
+
+Full Glyph docs: **[Glyph-MI/GUIDE.ru.md](../Glyph-MI/GUIDE.ru.md)** · Senza architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 
 <h3 id="en-architecture">Architecture</h3>
 
@@ -152,8 +176,8 @@ npm run electron:dev:watch
 
 ```bash
 npm run electron:build
-# → release/Senza-0.1.0-x64.exe
-# → release/Senza-0.1.0-Portable.exe
+# → release/Senza-1.0.0-x64.exe
+# → release/Senza-1.0.0-Portable.exe
 ```
 
 Icons: `icon.svg` → `npm run build:icons` → `build/icon.ico`
@@ -165,7 +189,8 @@ Icons: `icon.svg` → `npm run build:icons` → `build/icon.ico`
 3. Double-click a row to play (or enable **click lock** in Settings → Playback).
 4. Right-click a track — Play, Add to playlist, Edit tags.
 5. **Music Vault** — check Collection Score and fix gaps.
-6. **Settings** — theme, language, library folder tree, profile, **Journal**.
+6. **Flow** — create a wave; switch modes; play from recent imports.
+7. **Settings** — theme, language, **Glyph2.1-O**, library tree, **Journal**, profile, about.
 7. Title-bar **avatar** — opens Profile settings.
 
 <h3 id="en-library">Library on disk</h3>
@@ -179,6 +204,7 @@ senza/
     ├── music/Artist/Album/track.ext
     ├── covers/{trackId}.jpg
     ├── playlists/{slug}/playlist.json
+    ├── glyph/                 # cache, glyph-log.sqlite, exports, knowledge
     └── profile-avatar.jpg   (optional)
 ```
 
@@ -186,11 +212,12 @@ senza/
 
 ```
 Senza/
-├── electron/           # main process
+├── electron/           # main process + glyph-*.cjs
+├── glyph-mi/           # Glyph engine mirror (@glyph)
 ├── src/                # renderer (HTML, CSS, JS)
-├── docs/               # VISION, ARCHITECTURE, release notes
-├── scripts/            # build-icons, sync-version
-├── senza.release.json  # version & codename
+├── docs/               # VISION, ARCHITECTURE, GLYPH link, release notes
+├── scripts/            # build-icons, glyph mirror, lab template
+├── senza.release.json  # version & codename (Vivo)
 ├── icon.svg
 └── release/            # after electron:build
 ```
@@ -204,7 +231,8 @@ Senza/
 | [SECURITY.md](SECURITY.md) | Report vulnerabilities |
 | [CHANGELOG.md](CHANGELOG.md) | Version history |
 | [docs/VISION.md](docs/VISION.md) | Product vision & roadmap |
-| [docs/release-notes-v0.1.0-coda-github.md](docs/release-notes-v0.1.0-coda-github.md) | GitHub Release body (0.1.0) |
+| [docs/release-notes-v1.0.0-vivo-github.md](docs/release-notes-v1.0.0-vivo-github.md) | GitHub Release body (1.0.0) |
+| [Glyph-MI/GUIDE.ru.md](../Glyph-MI/GUIDE.ru.md) | Glyph2.1-O — full engine guide |
 
 <h3 id="en-license">License</h3>
 
@@ -254,14 +282,14 @@ Senza/
 | | |
 |---|---|
 | **Что** | Offline-библиотека и плеер (Electron) |
-| **Релиз** | **0.1.0 — Coda** ([`CHANGELOG.md`](CHANGELOG.md)) |
+| **Релиз** | **1.0.0 — Vivo** ([`CHANGELOG.md`](CHANGELOG.md)) |
 | **Аккаунт** | Не нужен |
 | **Сеть** | Не нужна для прослушивания |
 | **Интерфейс** | Тёмная/светлая тема · **EN / RU** |
 
 <h3 id="ru-features">Возможности</h3>
 
-См. [таблицу возможностей на английском](#en-features) — тот же набор в **0.1.0 Coda**.
+Полный список — [таблица возможностей на английском](#en-features) (**1.0.0 Vivo**). Glyph: [GUIDE.ru.md](../Glyph-MI/GUIDE.ru.md).
 
 <h3 id="ru-architecture">Архитектура</h3>
 
@@ -284,7 +312,8 @@ npm run electron:dev:watch
 2. Разделы **Все треки**, **Альбомы**, **Исполнители**, **Коллекция**.
 3. Клик по строке — воспроизведение; ПКМ — меню.
 4. **Music Vault** — здоровье коллекции.
-5. **Настройки** — тема, язык, дерево папок, профиль, **Журнал**.
+5. **Поток** — волна, режимы, недавние импорты.
+6. **Настройки** — тема, **Glyph2.1-O**, библиотека, **Журнал**, профиль.
 6. **Аватар в шапке** → профиль.
 
 <h3 id="ru-library">Библиотека на диске</h3>

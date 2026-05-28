@@ -51,6 +51,28 @@ export function formatArtistsDisplay(artists) {
   return splitArtists(Array.isArray(artists) ? artists.join('; ') : artists).join(', ');
 }
 
+/** Stable folder/id for artist avatars on disk. */
+export function artistSlug(name) {
+  const s = String(name || '').trim();
+  if (!s) return 'unknown-artist';
+  const ascii = s
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  if (ascii.length >= 2) return ascii.slice(0, 80);
+  let h = 0;
+  for (let i = 0; i < s.length; i += 1) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return `a-${h.toString(36)}`;
+}
+
+export function trackIncludesArtist(track, artistName) {
+  if (!track || !artistName) return false;
+  const key = String(artistName).trim().toLowerCase();
+  return splitArtists(track.artist).some((a) => a.toLowerCase() === key);
+}
+
 /**
  * Parse "Artists - Title" when artists contain commas.
  */

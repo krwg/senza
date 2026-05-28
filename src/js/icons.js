@@ -3,12 +3,13 @@ const S =
   'xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"';
 
 export const ICONS = {
+  flow: `<svg ${S}><path d="M4 14c2-4 5-6 8-6s6 2 8 6"/><path d="M4 10c2-3 5-5 8-5s6 2 8 5"/><path d="M4 6c2-2 5-4 8-4s6 2 8 4"/></svg>`,
   tracks: `<svg ${S}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="16" r="2.5"/></svg>`,
   albums: `<svg ${S}><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5V3h10v2"/></svg>`,
   artists: `<svg ${S}><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3.1-6 7-6s7 2.5 7 6"/></svg>`,
   playlists: `<svg ${S}><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>`,
   collection: `<svg ${S}><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>`,
-  vault: `<svg ${S}><path d="M12 3l2.2 4.5 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5-3.6-3.5 5-.7L12 3z"/></svg>`,
+  vault: `<svg ${S}><path d="M4 19h16"/><path d="M7 16V8"/><path d="M12 16V5"/><path d="M17 16v-6"/></svg>`,
   import: `<svg ${S}><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>`,
   settings: `<svg ${S}><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>`,
   queue: `<svg ${S}><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h10"/></svg>`,

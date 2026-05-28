@@ -5,6 +5,11 @@ export default defineConfig({
   root: 'src',
   base: './',
   publicDir: '../public',
+  resolve: {
+    alias: {
+      '@glyph': resolve(__dirname, 'glyph-mi/js'),
+    },
+  },
   build: {
     outDir: '../dist',
     emptyOutDir: true,

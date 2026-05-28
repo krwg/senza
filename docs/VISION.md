@@ -1,47 +1,40 @@
 # Senza — product vision
 
-Archive of the product prompt (rebuild reference).
-
 ## Problem
 
-Local players play music fine but fail the **collection lifecycle**: download → MP3Tag → covers → tags → rename → folders → import → rescan. That pain is the opportunity.
+Local players play music fine but fail the **collection lifecycle**: download → tags → covers → folders → import → rescan. Senza owns that loop offline.
 
-## What Senza is
+## What Senza is (1.0 Vivo)
 
-Offline-first music library + player. Import (drag & drop), local library, tag editor, covers, playlists as real folders, playback without internet, full file control.
+Offline-first **library + player** with **Glyph2.1-O** built in: import, organize, fix metadata, discover duplicates, listen with **Flow**, remember what you played — no account, no streaming.
 
-## MVP checklist
+## Shipped in 1.0.0 Vivo
 
-- Library: All Tracks, Albums, Artists, Playlists
-- Import: drag & drop, folder, files; mp3/flac/wav/ogg/m4a/aac
-- Playlists: physical folders in library
-- Tags: title, artist, album, genre, year, track #, cover
-- Instant search
-- Queue: Next Up, drag reorder, persist between sessions
+| Area | Status |
+|------|--------|
+| Library views | Tracks, Albums, Artists, Playlists, Collection |
+| Import | Files, folder, drag & drop → `music/Artist/Album/` |
+| Playback | Queue, persist, mini + fullscreen player |
+| Tags | MP3 write; cover crop; bulk editor |
+| **Glyph2.1-O** | Pipeline, vault scan, batch, auto-import, toggle off |
+| **Flow** | Wave, modes, ambient + BPM pulse |
+| **Journal** | Usage, listening time, tops, Time Capsule |
+| Vault | Collection score, attention lists, album infer |
+| Profile | Identicon + custom avatar |
+| i18n | EN / RU |
 
-## Killer features (post-MVP)
+## Roadmap (after Vivo)
 
-1. **Music Vault** — collection quality stats
-2. **Smart Metadata Assistant** — suggest tags from filenames
-3. **Collection mode** — large album/artist cards
-4. **Listening Journal** — local history, yearly tops
-5. **Music Time Capsule** — “a year ago you listened…”
-6. **Album Focus Mode** — full album UI
-7. **Bulk Editor**
-8. **Auto Cover Studio** — gradient placeholders
-9. **Folder Transparency** — show library tree
-10. **Portable Library** — `senza-library.zip` export
+- Full tag write for FLAC and more formats
+- Librosa BPM at import (today: heuristics / glyph features)
+- Portable library export (`senza-library.zip`)
+- iOS companion (exploratory)
+- ONNX genre model when enough SQLite training rows
 
-## Signature feature
+## Signature metrics
 
-**Collection Health** — score /100: covers, tags, duplicates, broken files, unknown artists, structure.
-
-## Senza 1.0 focus
-
-1. Apple-like UI  
-2. Built-in tag editor  
-3. Collection management  
+**Collection Health** (Vault) — score /100: tags, covers, duplicates, attention tracks.
 
 ---
 
-by Floke · krwg
+by Floke · Floke Studio

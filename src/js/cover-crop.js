@@ -1,4 +1,5 @@
 import { t } from './i18n.js';
+import { showToast } from './toast.js';
 
 let cropState = null;
 let bound = false;
@@ -17,7 +18,7 @@ function bindControlsOnce(locale) {
     if (!canvas || !pendingOnConfirm) return;
     const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.92));
     if (!blob) {
-      alert(t('cover.error', locale));
+      showToast(t('cover.error', locale), 'error');
       return;
     }
     const buffer = await blob.arrayBuffer();
@@ -56,7 +57,7 @@ export function openCoverCropModal(source, locale, onConfirm) {
 
   img.onerror = () => {
     URL.revokeObjectURL(url);
-    alert(t('cover.error', locale));
+    showToast(t('cover.error', locale), 'error');
   };
 
   img.onload = () => {

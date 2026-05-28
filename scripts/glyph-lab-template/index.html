@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glyph Lab</title>
+  <link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+  <div class="app" id="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">◇</span>
+        <div>
+          <strong>Glyph Lab</strong>
+          <span class="brand-sub">Metadata Intelligence</span>
+        </div>
+      </div>
+      <nav class="nav" id="nav"></nav>
+      <div class="sidebar-foot">
+        <button type="button" class="nav-btn" data-view="playbook">📖 Playbook</button>
+        <button type="button" class="btn ghost" id="btnOpenData">Папка data/</button>
+      </div>
+    </aside>
+    <div class="workspace">
+      <header class="topbar">
+        <h1 id="viewTitle">Обзор</h1>
+        <div class="topbar-actions" id="topbarActions"></div>
+      </header>
+      <main class="main" id="main"></main>
+    </div>
+  </div>
+  <div class="toast hidden" id="toast"></div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

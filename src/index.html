@@ -9,6 +9,8 @@
   <link rel="stylesheet" href="./styles/tokens.css">
   <link rel="stylesheet" href="./styles/icons.css">
   <link rel="stylesheet" href="./styles/app.css">
+  <link rel="stylesheet" href="./styles/flow.css">
+  <link rel="stylesheet" href="./styles/hints.css">
 </head>
 <body>
   <div id="app" class="app">
@@ -38,7 +40,7 @@
         </button>
         <button type="button" class="nav-item" data-view="vault">
           <span class="nav-icon icon-host" data-icon="vault"></span>
-          <span data-i18n="nav.vault">Music Vault</span>
+          <span data-i18n="nav.vault">Library</span>
         </button>
         <button type="button" class="nav-item" data-view="import">
           <span class="nav-icon icon-host" data-icon="import"></span>
@@ -142,8 +144,9 @@
       <h2 data-i18n="tags.title">Tag Editor</h2>
       <button type="button" class="icon-btn icon-host" id="tagEditorClose" data-icon="close" aria-label="Close"></button>
     </div>
-    <div class="tag-assistant" id="tagAssistant"></div>
-    <form id="tagForm" class="tag-form">
+    <div class="tag-editor-body">
+      <section class="glyph-slot" id="glyphPanel" aria-live="polite"></section>
+      <form id="tagForm" class="tag-form">
       <label><span data-i18n="tags.titleField">Title</span><input name="title" id="tagTitle"></label>
       <label><span data-i18n="tags.artist">Artist</span><input name="artist" id="tagArtist"></label>
       <label><span data-i18n="tags.album">Album</span><input name="album" id="tagAlbum"></label>
@@ -155,12 +158,13 @@
       </div>
       <input type="file" id="coverFileInput" class="hidden" accept="image/*">
       <div class="tag-form-actions">
-        <button type="button" class="btn" id="tagSuggest" data-i18n="tags.suggest">Smart suggest</button>
+        <button type="button" class="btn" id="tagGlyphRun" data-i18n="glyph.run">Run Glyph</button>
         <button type="button" class="btn" id="tagCover" data-i18n="tags.cover">Cover…</button>
         <button type="submit" class="btn btn-primary" data-i18n="tags.save">Save tags</button>
       </div>
       <p class="tag-hint" id="tagHint" data-i18n="tags.mp3hint">MP3 tag writing supported. Other formats: read-only for now.</p>
-    </form>
+      </form>
+    </div>
   </aside>
 
   <div class="drop-overlay hidden" id="dropOverlay">
@@ -198,8 +202,29 @@
     <button type="button" data-ctx="play" data-i18n="ctx.play">Play</button>
     <button type="button" data-ctx="playlist" data-i18n="ctx.playlist">Add to playlist</button>
     <button type="button" data-ctx="tags" data-i18n="ctx.tags">Edit tags</button>
+    <button type="button" data-ctx="reveal" data-i18n="ctx.reveal">Show in folder</button>
+    <button type="button" data-ctx="remove" data-i18n="ctx.remove">Remove track…</button>
     <button type="button" data-ctx="lock" data-i18n="ctx.lock">Lock clicks</button>
   </menu>
+
+  <aside id="bulkEditor" class="tag-editor bulk-editor hidden">
+    <div class="tag-editor-head">
+      <h2 data-i18n="bulk.title">Bulk edit</h2>
+      <button type="button" class="icon-btn icon-host" id="bulkEditorClose" data-icon="close" aria-label="Close"></button>
+    </div>
+    <p class="bulk-editor-sub" id="bulkEditorSub">0 tracks</p>
+    <form id="bulkForm" class="tag-form">
+      <label><span data-i18n="bulk.artist">Artist</span><input name="artist" id="bulkArtist" placeholder="—"></label>
+      <label><span data-i18n="bulk.album">Album</span><input name="album" id="bulkAlbum" placeholder="—"></label>
+      <label><span data-i18n="bulk.genre">Genre</span><input name="genre" id="bulkGenre" placeholder="—"></label>
+      <label><span data-i18n="bulk.year">Year</span><input name="year" id="bulkYear" type="number" placeholder="—"></label>
+      <p class="tag-hint" data-i18n="bulk.hint">Leave a field empty to keep the current value on each track.</p>
+      <div class="tag-form-actions">
+        <button type="button" class="btn" id="bulkCancel" data-i18n="bulk.close">Close</button>
+        <button type="submit" class="btn btn-primary" data-i18n="bulk.apply">Apply to selected</button>
+      </div>
+    </form>
+  </aside>
 
   <div class="playlist-picker hidden" id="playlistPicker">
     <div class="playlist-picker-backdrop" id="playlistPickerBackdrop"></div>
@@ -208,6 +233,17 @@
       <ul class="playlist-picker-list" id="playlistPickerList"></ul>
       <p class="playlist-picker-empty hidden" id="playlistPickerEmpty"></p>
       <button type="button" class="btn" id="playlistPickerClose" data-i18n="common.close">Close</button>
+    </div>
+  </div>
+
+  <div class="senza-dialog hidden" id="senzaDialog">
+    <div class="senza-dialog-backdrop" id="senzaDialogBackdrop"></div>
+    <div class="senza-dialog-panel" id="senzaDialogPanel">
+      <h3 class="senza-dialog-title" id="senzaDialogTitle"></h3>
+      <p class="senza-dialog-message" id="senzaDialogMessage"></p>
+      <p class="senza-dialog-detail hidden" id="senzaDialogDetail"></p>
+      <div class="senza-dialog-actions" id="senzaDialogActions"></div>
+      <button type="button" class="senza-dialog-cancel" id="senzaDialogCancel" data-i18n="common.cancel">Cancel</button>
     </div>
   </div>
 

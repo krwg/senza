@@ -1,0 +1,16 @@
+{
+  "name": "glyph-lab",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "start": "concurrently -n api,ui -c blue,magenta \"node server.cjs\" \"vite\"",
+    "dev": "npm run start",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "vite": "^5.4.21"
+  }
+}

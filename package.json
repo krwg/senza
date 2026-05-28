@@ -1,6 +1,6 @@
 {
   "name": "senza",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Offline-first music library and player — your collection, your files.",
   "main": "electron/main.cjs",
   "type": "module",
@@ -14,6 +14,11 @@
     "electron:dev": "npm run build:icons && npm run build && cross-env NODE_ENV=development VITE_DEV_SERVER_URL=http://localhost:5173 electron .",
     "electron:dev:watch": "npm run build:icons && concurrently \"vite\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development VITE_DEV_SERVER_URL=http://localhost:5173 electron .\"",
     "electron:build": "npm run sync:version && npm run build && npm run build:icons && electron-builder",
+    "glyph-lab:init": "node scripts/init-glyph-lab.mjs",
+    "glyph-lab": "node scripts/init-glyph-lab.mjs && npm install --prefix glyph-lab && npm run start --prefix glyph-lab",
+    "glyph:sync-mirror": "node scripts/sync-glyph-mirror.mjs",
+    "glyph:push-mirror": "node scripts/push-glyph-mirror.mjs",
+    "glyph:import-export": "node scripts/glyph-import-export.mjs",
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {
@@ -26,7 +31,15 @@
     "files": [
       "dist/**/*",
       "electron/**/*",
+      "glyph-mi/knowledge/**/*",
+      "glyph-mi/js/**/*",
       "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "glyph-mi/knowledge",
+        "to": "glyph-mi/knowledge"
+      }
     ],
     "icon": "build/icon.ico",
     "win": {
@@ -67,6 +80,7 @@
     "wait-on": "^7.2.0"
   },
   "dependencies": {
+    "better-sqlite3": "^11.10.0",
     "music-metadata": "^10.7.0",
     "node-id3": "^0.2.6"
   }

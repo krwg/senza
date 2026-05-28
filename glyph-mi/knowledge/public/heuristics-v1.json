@@ -1,0 +1,36 @@
+{
+  "format": "glyph-knowledge-pack",
+  "version": 1,
+  "id": "floke-heuristics-v1",
+  "description": "Built-in path and title heuristics — strict matching, no false Various Artists.",
+  "artistAliases": [
+    {
+      "match": "various artists",
+      "artist": "Various Artists",
+      "mode": "folder",
+      "force": true
+    },
+    {
+      "match": "разные исполнители",
+      "artist": "Various Artists",
+      "mode": "folder",
+      "force": true
+    }
+  ],
+  "titleCleanup": [
+    { "pattern": "\\s*\\(feat\\.[^)]+\\)", "replace": "" },
+    { "pattern": "\\s*\\(ft\\.[^)]+\\)", "replace": "" },
+    { "pattern": "\\s*\\[feat\\.[^\\]]+\\]", "replace": "" },
+    { "pattern": "\\s*-\\s*\\d{4}\\s*$", "replace": "" }
+  ],
+  "folderRules": [
+    { "match": "soundtrack", "genre": "Soundtrack" },
+    { "match": "ost", "genre": "Soundtrack" },
+    { "match": "саундтрек", "genre": "Soundtrack" },
+    { "match": "hip-hop", "genre": "Hip-Hop" },
+    { "match": "hip hop", "genre": "Hip-Hop" },
+    { "match": "electronic", "genre": "Electronic" },
+    { "match": "classical", "genre": "Classical" }
+  ],
+  "examples": []
+}

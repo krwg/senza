@@ -8,7 +8,7 @@ export const SETTINGS_NAV_GROUPS = [
   {
     id: 'app',
     labelKey: 'settings.nav_group_app',
-    items: [{ id: 'appearance' }, { id: 'library' }, { id: 'playback' }],
+    items: [{ id: 'appearance' }, { id: 'library' }, { id: 'playback' }, { id: 'glyph' }],
   },
   {
     id: 'info',

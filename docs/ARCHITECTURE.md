@@ -1,29 +1,35 @@
 # Senza — architecture
 
-Technical map for contributors. User-facing overview: [README](../README.md).
+Technical map for contributors. User-facing overview: [README](../README.md). Glyph engine: [Glyph-MI/GUIDE.ru.md](../../Glyph-MI/GUIDE.ru.md).
 
 ## Overview
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  Electron main (electron/main.cjs)                          │
-│  IPC · import · tags · covers · playlists · profile · state │
-└───────────────────────────┬─────────────────────────────────┘
-                            │ contextBridge (preload.cjs)
-┌───────────────────────────▼─────────────────────────────────┐
-│  Renderer (src/js/main.js + views)                          │
-│  Sidebar · content views · player · settings · tag editor   │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│  Electron main (electron/main.cjs)                               │
+│  IPC · import · tags · covers · playlists · profile · state      │
+│  glyph-import-meta · glyph-online · glyph-log-db · glyph-db · …  │
+└────────────────────────────┬─────────────────────────────────────┘
+                             │ contextBridge (preload.cjs)
+┌────────────────────────────▼─────────────────────────────────────┐
+│  Renderer (src/js/main.js + views)                             │
+│  Flow · library views · player · settings · tag editor · Glyph UI│
+└────────────────────────────┬─────────────────────────────────────┘
+                             │ Vite alias @glyph → glyph-mi/js
+┌────────────────────────────▼─────────────────────────────────────┐
+│  Glyph-MI (glyph-mi/js) — pipeline, rules, KNN, ML, providers    │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
 ## Data locations
 
 | Path | Contents |
 |------|----------|
-| `%APPDATA%/senza/senza-state.json` | tracks[], queue, playlists refs, playHistory, settings, profile |
+| `%APPDATA%/senza/senza-state.json` | tracks[], queue, playHistory, usage, settings, profile |
 | `%APPDATA%/senza/library/music/` | imported audio `Artist/Album/track.ext` |
 | `%APPDATA%/senza/library/covers/` | `{trackId}.jpg` sidecar covers |
 | `%APPDATA%/senza/library/playlists/` | `{slug}/playlist.json` |
+| `%APPDATA%/senza/library/glyph/` | cache, knowledge, `glyph-log.sqlite`, exports |
 | `%APPDATA%/senza/library/profile-avatar.jpg` | optional custom profile image |
 
 ## Main process modules
@@ -31,66 +37,57 @@ Technical map for contributors. User-facing overview: [README](../README.md).
 | Module | Role |
 |--------|------|
 | `main.cjs` | Window, IPC registry, state load/save |
-| `import.cjs` | Copy files into library tree; dedupe by path |
-| `metadata.cjs` | `loadMusicMetadata()` wrapper (music-metadata v10) |
+| `import.cjs` | Copy files; `normalizeImportMeta` before path resolve |
+| `metadata.cjs` | `loadMusicMetadata()` (music-metadata v10) |
 | `tags.cjs` | MP3 ID3 read/write via `node-id3` |
-| `covers.cjs` | Cover files + extract embedded art on import |
-| `library-tree.cjs` | Scan `music/` for settings folder tree |
+| `covers.cjs` | Cover files + embedded art on import |
+| `library-tree.cjs` | Scan `music/` for settings tree |
+| `glyph-import-meta.cjs` | Import-time title/artist normalization |
+| `glyph-features.cjs` | BPM / mood features on tracks |
+| `glyph-online.cjs` | MusicBrainz + AcoustID + disk cache |
+| `glyph-log-db.cjs` | SQLite glyph_log / glyph_diff / tracks_features |
+| `glyph-db.cjs` | Library feature index for KNN |
+| `glyph-learn-rules.cjs` | Learned rules with 60-day decay |
 
-## Renderer modules
+## Renderer modules (selected)
 
 | Module | Role |
 |--------|------|
-| `main.js` | App shell, routing, bindings, import/tag/profile flows |
-| `views.js` | HTML templates for all views + settings panels |
-| `player.js` / `player-chrome.js` | Audio element, queue, progress, artwork |
-| `library.js` | Grouping, vault score, search filter |
-| `journal.js` | Play history, stats, time capsule |
-| `cover-crop.js` | Square crop modal → JPEG buffer |
-| `cover-art.js` | Gradient fallback when no cover file |
-| `profile.js` | Identicon generator (32×32 cells) |
-| `i18n.js` | EN/RU strings |
-| `settings-nav.js` | Settings sidebar structure |
-| `metadata-assistant.js` | Filename → tag suggestions |
-| `artists.js` | Multi-artist parsing (`;`, feat., commas) |
+| `main.js` | Shell, routing, import, Glyph toggle, usage timer |
+| `views.js` / `views-flow.js` | View HTML templates |
+| `glyph-ui.js` | Run pipeline, render Glyph panel, diff |
+| `glyph-scan.js` / `glyph-vault.js` | Vault scan UI |
+| `glyph-batch.js` | Batch analyze + apply |
+| `glyph-auto-tag.js` | Post-import auto-tag |
+| `glyph-settings.js` | `isGlyphEnabled()` |
+| `flow-ambient.js` / `flow.js` | Flow wave + visuals |
+| `journal.js` | Play log, stats, formatMinutes |
+| `player.js` / `player-chrome.js` | Audio, queue, overlays |
+| `hint.js` | Portal tooltips |
 
 ## IPC surface (`window.senza`)
 
-| Channel | Purpose |
-|---------|---------|
-| `get-state` / `save-state` | Persist app state |
-| `import-paths` | Import files/folders |
-| `read-tags` / `write-tags` | Tag editor |
-| `cover-url` | `file://` URL for track cover |
-| `pick-cover` / `read-file-binary` | Cover & avatar image pick |
-| `library-tree` | Folder tree for settings |
-| `profile-get` / `profile-save` / `profile-avatar-url` | Profile |
-| `playlists-*` | CRUD playlist JSON on disk |
-| `window-*` | Minimize / maximize / close |
+Core: `get-state`, `save-state`, `import-paths`, `read-tags`, `write-tags`, `cover-url`, playlists, profile, window controls.
+
+Glyph (when used): `glyphMusicBrainzLookup`, `glyphAcoustidLookup`, `glyphLog`, `glyphLogExportDataset`, `glyphLearnExport`, `glyphDbSync`, `glyphDbUpsert`, `glyphLibraryFeatures`, `glyphOnlineStatus`, `glyphOpenExports`, etc. (see `electron/preload.cjs`).
 
 ## Playback flow
 
-1. User selects track → `player.playTrack()` sets queue + `audio.src` via `fileUrl` IPC.
-2. `logPlay()` appends to `state.playHistory`.
-3. `player-chrome` updates metadata + `coverUrl` for artwork.
+1. User selects track → `player.playTrack()` → `audio.src` via `fileUrl`.
+2. `logPlay()` appends to `playHistory` with `durationSec`.
+3. `persistPlayback()` saves queue + state (includes history).
+4. `player-chrome` updates artwork; Flow syncs ambient if active.
 
-## Tag + cover write flow
+## Glyph flow (renderer)
 
-1. Renderer sends `write-tags` with fields + optional `coverBuffer`.
-2. Main always saves cover JPEG to `library/covers/{id}.jpg`.
-3. MP3: `writeTags()` embeds image in file; other formats: state/metadata in app only.
+1. `runGlyphAnalysis()` → `runGlyphPipeline()` (`@glyph/pipeline.js`).
+2. Optional online enrich → local Ollama if below threshold.
+3. `renderGlyphPanel()` + `glyph-telemetry` log suggest/apply/reject.
 
-## Build pipeline
+Mirror sync: `npm run glyph:sync-mirror` (Glyph-MI → `glyph-mi/`).
 
-1. `vite build` → `dist/`
-2. `build:icons` → `build/icon.ico`
-3. `electron-builder` packages `dist/` + `electron/`
+## Build
 
-## Design tokens
-
-Shared with Floke: `src/styles/tokens.css` (accent `#c8a96e`, Monocraft brand, Space Mono UI).  
-See [Floke-design](https://github.com/FlokeStudio/Floke-design).
-
----
-
-by Floke · krwg
+- **Renderer:** Vite 5 → `dist/`
+- **Desktop:** electron-builder → `release/Senza-1.0.0-x64.exe` (+ portable)
+- **Version:** `senza.release.json` ← `npm run sync:version` ← `package.json`

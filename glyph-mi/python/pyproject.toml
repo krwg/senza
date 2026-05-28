@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "glyph-mi"
+version = "0.1.0"
+description = "Glyph Metadata Intelligence — local music tag agent for Floke apps"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "GPL-3.0-or-later" }
+authors = [{ name = "Floke Studio" }]
+dependencies = []
+
+[project.scripts]
+glyph-mi = "glyph_mi.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["glyph_mi*"]

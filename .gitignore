@@ -1,6 +1,13 @@
 node_modules/
 dist/
 release/
+# Glyph Lab + private knowledge (public Glyph MI → github.com/FlokeStudio/Glyph-MI)
+glyph-lab/
+glyph-mi/knowledge/private/
+**/__pycache__/
+*.pyc
+tools/chromaprint/
 *.log
 .DS_Store
 Thumbs.db
+docs/VISION.md
