@@ -22,7 +22,9 @@ copyFileSync(svgPath, join(buildDir, 'icon.svg'));
 copyFileSync(svgPath, join(publicDir, 'icon.svg'));
 
 const png256 = join(buildDir, 'icon.png');
+const png512 = join(buildDir, 'icon-512.png');
 await sharp(svg, { density: 288 }).resize(256, 256).png().toFile(png256);
+await sharp(svg, { density: 288 }).resize(512, 512).png().toFile(png512);
 
 const sizes = [256, 128, 64, 48, 32, 16];
 const pngBuffers = await Promise.all(
@@ -32,4 +34,4 @@ const pngBuffers = await Promise.all(
 const icoPath = join(buildDir, 'icon.ico');
 writeFileSync(icoPath, await toIco(pngBuffers));
 
-console.log('[build-icons] Wrote', icoPath, png256, join(publicDir, 'icon.svg'));
+console.log('[build-icons] Wrote', icoPath, png256, png512, join(publicDir, 'icon.svg'));
