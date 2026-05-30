@@ -13,7 +13,7 @@ import { renderGlyphDiffHtml } from './glyph-diff.js';
 import { logGlyphTelemetry, GLYPH_EVENTS } from './glyph-telemetry.js';
 import { pickTags } from './glyph-learn.js';
 
-export const GLYPH_VERSION = '2.1-O';
+export const GLYPH_VERSION = '2.2-O';
 
 function esc(s) {
   return String(s)

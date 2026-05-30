@@ -4,9 +4,24 @@
 
 Local players play music fine but fail the **collection lifecycle**: download → tags → covers → folders → import → rescan. Senza owns that loop offline.
 
-## What Senza is (1.0 Vivo)
+## What Senza is (1.1 Legato)
 
 Offline-first **library + player** with **Glyph2.1-O** built in: import, organize, fix metadata, discover duplicates, listen with **Flow**, remember what you played — no account, no streaming.
+
+## Shipped in 1.1.0 Legato
+
+| Area | Status |
+|------|--------|
+| Multi-format tags | MP3, FLAC, OGG, M4A, AAC, WAV write |
+| BPM import | librosa (optional) + music-tempo fallback |
+| Library backup | `senza-library.zip` export/import |
+| Player | Shuffle, repeat, crossfade, ReplayGain, hotkeys, media keys |
+| Discovery | Favorites, Recently played, smart playlists, fuzzy search |
+| Lyrics | Local `.lrc` sidecar |
+| Library watch | Auto-import from watched folder |
+| ONNX genre | Ready when ≥500 labeled rows + model file |
+| Platforms | Windows + macOS + Linux builds |
+| Tests | Vitest unit tests |
 
 ## Shipped in 1.0.0 Vivo
 
@@ -23,13 +38,11 @@ Offline-first **library + player** with **Glyph2.1-O** built in: import, organiz
 | Profile | Identicon + custom avatar |
 | i18n | EN / RU |
 
-## Roadmap (after Vivo)
+## Roadmap (after Legato)
 
-- Full tag write for FLAC and more formats
-- Librosa BPM at import (today: heuristics / glyph features)
-- Portable library export (`senza-library.zip`)
 - iOS companion (exploratory)
-- ONNX genre model when enough SQLite training rows
+- Deeper gapless album playback
+- ONNX genre model training pipeline (export → train → ship)
 
 ## Signature metrics
 

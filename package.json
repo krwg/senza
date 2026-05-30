@@ -1,6 +1,6 @@
 {
   "name": "senza",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Offline-first music library and player — your collection, your files.",
   "main": "electron/main.cjs",
   "type": "module",
@@ -19,6 +19,7 @@
     "glyph:sync-mirror": "node scripts/sync-glyph-mirror.mjs",
     "glyph:push-mirror": "node scripts/push-glyph-mirror.mjs",
     "glyph:import-export": "node scripts/glyph-import-export.mjs",
+    "test": "vitest run",
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {
@@ -67,6 +68,22 @@
     },
     "portable": {
       "artifactName": "Senza-${version}-Portable.${ext}"
+    },
+    "mac": {
+      "target": [
+        { "target": "dmg", "arch": ["x64", "arm64"] },
+        { "target": "zip", "arch": ["x64", "arm64"] }
+      ],
+      "category": "public.app-category.music",
+      "icon": "build/icon.icns"
+    },
+    "linux": {
+      "target": [
+        { "target": "AppImage", "arch": ["x64"] },
+        { "target": "deb", "arch": ["x64"] }
+      ],
+      "category": "Audio",
+      "icon": "build/icon.png"
     }
   },
   "devDependencies": {
@@ -77,11 +94,18 @@
     "sharp": "^0.33.5",
     "to-ico": "^1.1.5",
     "vite": "^5.4.21",
+    "vitest": "^4.1.7",
     "wait-on": "^7.2.0"
   },
   "dependencies": {
+    "archiver": "^8.0.0",
+    "audio-decode": "^3.10.1",
     "better-sqlite3": "^11.10.0",
+    "chokidar": "^5.0.0",
+    "extract-zip": "^2.0.1",
     "music-metadata": "^10.7.0",
-    "node-id3": "^0.2.6"
+    "music-tempo": "^1.0.3",
+    "node-id3": "^0.2.6",
+    "node-taglib-sharp": "^6.0.3"
   }
 }

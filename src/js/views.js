@@ -19,6 +19,7 @@ import { renderSettingsNavHtml } from './settings-nav.js';
 import { renderGlyphVaultSection } from './glyph-vault.js';
 import { hintButton } from './hint.js';
 import { tracksMissingAlbum } from './glyph-album.js';
+import { NAV_CATALOG } from './nav-config.js';
 
 function esc(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
@@ -58,10 +59,15 @@ export function renderTrackRow(tr, index, locale, extraActions = '', rowOpts = {
   const selectCol = rowOpts.selectable
     ? `<label class="track-select-wrap"><input type="checkbox" class="track-select" data-select-track="${tr.id}"${rowOpts.selected ? ' checked' : ''}><span class="sr-only">Select</span></label>`
     : '';
+  const favSlot =
+    rowOpts.showFavorite !== false
+      ? `<button type="button" class="btn btn-icon icon-host track-fav${rowOpts.favorite ? ' track-fav--on' : ''}" data-fav-track="${tr.id}" title="${t('favorites.toggle', locale)}" aria-label="${t('favorites.toggle', locale)}" data-icon="${rowOpts.favorite ? 'heart' : 'heartOutline'}"></button>`
+      : `<span class="track-fav-spacer" aria-hidden="true"></span>`;
   return `
     <div class="track-row${rowOpts.selected ? ' track-row--selected' : ''}" data-id="${tr.id}">
       ${selectCol}
       <span class="idx">${index + 1}</span>
+      ${favSlot}
       <span class="track-row-title">${esc(tr.title)}</span>
       ${renderArtistLinks(tr.artist)}
       <span class="row-actions">
@@ -82,11 +88,15 @@ export function renderTracksView(tracks, locale, opts = {}) {
   const rowOpts = {
     selectable: Boolean(opts.bulkMode),
     selected: false,
+    showFavorite: Boolean(opts.rowOpts?.showFavorite),
+    favorite: false,
   };
+  const favSet = opts.favoriteIds instanceof Set ? opts.favoriteIds : new Set(opts.favoriteIds || []);
   const sorted = opts.sortKey ? sortTracks(tracks, opts.sortKey, opts.sortDir || 'asc') : tracks;
   const rows = sorted
     .map((tr, i) => {
       rowOpts.selected = selected.has(tr.id);
+      rowOpts.favorite = favSet.has(tr.id);
       return renderTrackRow(tr, i, locale, '', rowOpts);
     })
     .join('');
@@ -341,7 +351,19 @@ export function renderArtistDetailView(artistId, name, tracks, locale) {
     <div class="track-list album-track-list">${rows}</div>`;
 }
 
-export function renderPlaylistsView(playlists, locale) {
+export function renderPlaylistsView(playlists, locale, smartPlaylists = []) {
+  const smartItems = smartPlaylists
+    .map(
+      (p) => `
+    <div class="playlist-item playlist-item--smart" data-smart-playlist="${p.id}">
+      <div>
+        <strong>${esc(p.name)}</strong><br>
+        <span style="color:var(--text-muted);font-size:10px">${t('playlists.smartHint', locale)}</span>
+      </div>
+    </div>`
+    )
+    .join('');
+
   const items = playlists
     .map(
       (p) => `
@@ -364,6 +386,7 @@ export function renderPlaylistsView(playlists, locale) {
       <input type="text" id="playlistNameInput" placeholder="${t('playlists.newPlaceholder', locale)}">
       <button type="button" class="btn btn-primary" id="btnCreatePlaylist">${t('playlists.create', locale)}</button>
     </div>
+    ${smartItems ? `<div class="playlist-smart-section"><h3 class="playlist-smart-title">${t('playlists.smartTitle', locale)}</h3>${smartItems}</div>` : ''}
     <div id="playlistList">${items || `<div class="empty-state">${t('playlists.empty', locale)}</div>`}</div>
     <div id="playlistDetail" class="hidden"></div>`;
 }
@@ -452,6 +475,44 @@ export function renderVaultView(tracks, locale, detailFilter = null, glyphScan =
     ${detailHtml}`;
 }
 
+export function renderRecentView(tracks, playHistory, locale, favoriteIds = []) {
+  const favSet = favoriteIds instanceof Set ? favoriteIds : new Set(favoriteIds || []);
+  const seen = new Set();
+  const ordered = [];
+  for (let i = (playHistory?.length || 0) - 1; i >= 0; i -= 1) {
+    const e = playHistory[i];
+    if (seen.has(e.trackId)) continue;
+    const tr = tracks.find((t) => t.id === e.trackId);
+    if (!tr) continue;
+    seen.add(e.trackId);
+    ordered.push(tr);
+    if (ordered.length >= 50) break;
+  }
+  if (!ordered.length) {
+    return `<div class="empty-state">${t('recent.empty', locale)}</div>`;
+  }
+  const rows = ordered.map((tr, i) =>
+    renderTrackRow(tr, i, locale, '', { showFavorite: true, favorite: favSet.has(tr.id) })
+  ).join('');
+  return `
+    <div class="view-head"><h1>${t('nav.recent', locale)}</h1><p>${t('recent.sub', locale)}</p></div>
+    <div class="track-list">${rows}</div>`;
+}
+
+export function renderFavoritesView(tracks, favoriteIds, locale) {
+  const favSet = favoriteIds instanceof Set ? favoriteIds : new Set(favoriteIds || []);
+  const list = tracks.filter((tr) => favSet.has(tr.id));
+  if (!list.length) {
+    return `<div class="empty-state">${t('favorites.empty', locale)}</div>`;
+  }
+  const rows = list.map((tr, i) =>
+    renderTrackRow(tr, i, locale, '', { showFavorite: true, favorite: true })
+  ).join('');
+  return `
+    <div class="view-head"><h1>${t('nav.favorites', locale)}</h1><p>${tf('favorites.count', locale, { n: list.length })}</p></div>
+    <div class="track-list">${rows}</div>`;
+}
+
 export function renderImportView(locale) {
   return `
     <div class="view-head">
@@ -464,6 +525,32 @@ export function renderImportView(locale) {
     <div class="import-actions">
       <button type="button" class="btn btn-primary" id="btnPickFiles">${t('import.files', locale)}</button>
       <button type="button" class="btn" id="btnPickFolder">${t('import.folder', locale)}</button>
+    </div>`;
+}
+
+function renderNavCustomize(locale, navConfig) {
+  const orderMap = new Map((navConfig || []).map((c) => [c.id, c]));
+  const rows = NAV_CATALOG.map((item, i) => {
+    const cfg = orderMap.get(item.id) || { visible: true, order: i };
+    const visible = cfg.visible !== false;
+    return `
+      <div class="nav-custom-row" data-nav-id="${item.id}">
+        <label class="nav-custom-check">
+          <input type="checkbox" class="nav-custom-visible" data-nav-id="${item.id}" ${visible ? 'checked' : ''}>
+          <span data-i18n="${item.key}">${t(item.key, locale)}</span>
+        </label>
+        <span class="nav-custom-zone">${item.zone === 'footer' ? t('nav.zoneFooter', locale) : t('nav.zoneMain', locale)}</span>
+        <span class="nav-custom-actions">
+          <button type="button" class="btn btn-icon nav-custom-up" data-nav-id="${item.id}" aria-label="${t('nav.moveUp', locale)}">↑</button>
+          <button type="button" class="btn btn-icon nav-custom-down" data-nav-id="${item.id}" aria-label="${t('nav.moveDown', locale)}">↓</button>
+        </span>
+      </div>`;
+  }).join('');
+  return `
+    <div class="settings-field nav-custom-block">
+      <span class="settings-field-label" data-i18n="settings.navCustomize">${t('settings.navCustomize', locale)}</span>
+      <p class="settings-field-hint" data-i18n="settings.navCustomizeHint">${t('settings.navCustomizeHint', locale)}</p>
+      <div class="nav-custom-list">${rows}</div>
     </div>`;
 }
 
@@ -509,19 +596,24 @@ export function renderSettingsView(locale, settings, libraryRoot, activeSection 
         <option value="ru" ${locale === 'ru' ? 'selected' : ''}>Русский</option>
       </select>
     </div>
+    <div class="settings-field settings-field-row">
+      <span class="settings-field-label" data-i18n="settings.accent">${t('settings.accent', locale)}</span>
+      <input type="color" id="settingAccent" class="settings-color-input" value="${settings.accentColor || '#c8a96e'}">
+    </div>
     <div class="settings-field settings-field-center">
       <label class="settings-toggle">
         <span data-i18n="settings.collection">${t('settings.collection', locale)} ${hintButton('settings.collectionHint', locale)}</span>
         <input type="checkbox" id="settingCollection" ${settings.collectionMode ? 'checked' : ''}>
       </label>
-    </div>`
+    </div>
+    ${renderNavCustomize(locale, settings.navConfig)}`
   );
 
   const glyphPanel = settingsPanel(
     'glyph',
     activeSection,
     `
-    <h2 class="settings-panel-title">Glyph2.1-O</h2>
+    <h2 class="settings-panel-title">Glyph2.2-O</h2>
     <p class="settings-panel-desc" data-i18n="settings.section_glyph_desc">${t('settings.section_glyph_desc', locale)}</p>
     <div class="settings-field settings-field-center settings-field--glyph-master">
       <label class="settings-toggle">
@@ -593,8 +685,18 @@ export function renderSettingsView(locale, settings, libraryRoot, activeSection 
       <code class="settings-path">${esc(libraryRoot)}</code>
     </div>
     <div class="library-settings-actions">
+      <button type="button" class="btn btn-primary" id="btnLibraryExport" data-i18n="library.export">${t('library.export', locale)}</button>
+      <button type="button" class="btn" id="btnLibraryImport" data-i18n="library.import">${t('library.import', locale)}</button>
       <button type="button" class="btn" id="btnOpenLibraryFolder" data-i18n="library.openFolder">${t('library.openFolder', locale)}</button>
       <button type="button" class="btn" id="btnRefreshLibraryTree" data-i18n="library.refreshTree">${t('library.refreshTree', locale)}</button>
+    </div>
+    <div class="settings-field">
+      <span class="settings-field-label" data-i18n="library.watchedFolder">${t('library.watchedFolder', locale)}</span>
+      <code class="settings-path" id="watchedFolderPath">${esc(settings.watchedFolder || '—')}</code>
+    </div>
+    <div class="library-settings-actions">
+      <button type="button" class="btn" id="btnPickWatchedFolder" data-i18n="library.pickWatched">${t('library.pickWatched', locale)}</button>
+      <button type="button" class="btn" id="btnStopWatchedFolder" data-i18n="library.stopWatched">${t('library.stopWatched', locale)}</button>
     </div>
     <div class="settings-field settings-field-tree">
       <span class="settings-field-label" data-i18n="library.tree">${t('library.tree', locale)}</span>
@@ -633,6 +735,23 @@ export function renderSettingsView(locale, settings, libraryRoot, activeSection 
     <div class="settings-field settings-field-center">
       <label class="settings-field-label" for="settingVolume" data-i18n="settings.volume">${t('settings.volume', locale)}</label>
       <input type="range" id="settingVolume" class="range-input range-volume settings-volume" min="0" max="1" step="0.01" value="${settings.volume ?? 0.85}">
+    </div>
+    <div class="settings-field settings-field-center">
+      <label class="settings-toggle">
+        <span data-i18n="settings.replayGain">${t('settings.replayGain', locale)}</span>
+        <input type="checkbox" id="settingReplayGain" ${settings.replayGainEnabled ? 'checked' : ''}>
+      </label>
+    </div>
+    <div class="settings-field settings-field-row">
+      <span class="settings-field-label" data-i18n="settings.crossfade">${t('settings.crossfade', locale)}</span>
+      <input type="range" id="settingCrossfade" class="range-input settings-volume" min="0" max="8" step="0.5" value="${settings.crossfadeSec ?? 0}">
+      <span id="crossfadeLabel">${settings.crossfadeSec ?? 0}s</span>
+    </div>
+    <div class="settings-field settings-field-center">
+      <label class="settings-toggle">
+        <span data-i18n="settings.lyrics">${t('settings.lyrics', locale)}</span>
+        <input type="checkbox" id="settingLyrics" ${settings.lyricsEnabled !== false ? 'checked' : ''}>
+      </label>
     </div>
     <div class="settings-field settings-field-center">
       <label class="settings-toggle">

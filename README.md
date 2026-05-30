@@ -73,12 +73,12 @@ Think of it as **your shelf, digitized**: one calm place to import, organize, fi
 
 ### Works today · Coming later
 
-| Today (1.0.0 Vivo) | Planned |
+| Today (1.1.0 Legato) | Planned |
 |--------------------|---------|
-| Windows desktop + Glyph2.1-O | iOS companion (roadmap) |
-| Flow home, Journal stats, bulk tags | Full tag write for FLAC and more |
-| MP3 tag + cover + SQLite Glyph log | Portable `senza-library.zip` export |
-| MusicBrainz / optional AcoustID / Ollama | Librosa BPM at import |
+| Multi-format tags, BPM import, library zip | iOS companion (roadmap) |
+| Shuffle/repeat, crossfade, ReplayGain, lyrics | ONNX genre model ship (when trained) |
+| Favorites, smart playlists, fuzzy search | Full gapless album mode |
+| macOS / Linux builds + Vitest | |
 
 ---
 
@@ -87,8 +87,8 @@ Think of it as **your shelf, digitized**: one calm place to import, organize, fi
 | | |
 |---|---|
 | **What** | Offline music library + player (Electron) |
-| **Release** | **1.0.0 — Vivo** ([`CHANGELOG.md`](CHANGELOG.md) · [Releases](https://github.com/FlokeStudio/Senza/releases)) |
-| **Codename** | **Vivo** — living library, metadata that breathes |
+| **Release** | **1.1.0 — Legato** ([`CHANGELOG.md`](CHANGELOG.md) · [Releases](https://github.com/FlokeStudio/Senza/releases)) |
+| **Codename** | **Legato** — smooth, connected listening |
 | **Account** | None |
 | **Network** | Not required for playback |
 | **UI** | Dark/light · **EN / RU** · Monocraft wordmark · SF-style icons |
@@ -176,8 +176,8 @@ npm run electron:dev:watch
 
 ```bash
 npm run electron:build
-# → release/Senza-1.0.0-x64.exe
-# → release/Senza-1.0.0-Portable.exe
+# → release/Senza-1.1.0-x64.exe
+# → release/Senza-1.1.0-Portable.exe
 ```
 
 Icons: `icon.svg` → `npm run build:icons` → `build/icon.ico`
@@ -217,7 +217,7 @@ Senza/
 ├── src/                # renderer (HTML, CSS, JS)
 ├── docs/               # VISION, ARCHITECTURE, GLYPH link, release notes
 ├── scripts/            # build-icons, glyph mirror, lab template
-├── senza.release.json  # version & codename (Vivo)
+├── senza.release.json  # version & codename (Legato)
 ├── icon.svg
 └── release/            # after electron:build
 ```
@@ -231,6 +231,7 @@ Senza/
 | [SECURITY.md](SECURITY.md) | Report vulnerabilities |
 | [CHANGELOG.md](CHANGELOG.md) | Version history |
 | [docs/VISION.md](docs/VISION.md) | Product vision & roadmap |
+| [docs/release-notes-v1.1.0-legato-github.md](docs/release-notes-v1.1.0-legato-github.md) | GitHub Release body (1.1.0) |
 | [docs/release-notes-v1.0.0-vivo-github.md](docs/release-notes-v1.0.0-vivo-github.md) | GitHub Release body (1.0.0) |
 | [Glyph-MI/GUIDE.ru.md](../Glyph-MI/GUIDE.ru.md) | Glyph2.1-O — full engine guide |
 
@@ -282,14 +283,15 @@ Senza/
 | | |
 |---|---|
 | **Что** | Offline-библиотека и плеер (Electron) |
-| **Релиз** | **1.0.0 — Vivo** ([`CHANGELOG.md`](CHANGELOG.md)) |
+| **Релиз** | **1.1.0 — Legato** ([`CHANGELOG.md`](CHANGELOG.md)) |
+| **Кодовое имя** | **Legato** — плавное, связное прослушивание |
 | **Аккаунт** | Не нужен |
 | **Сеть** | Не нужна для прослушивания |
 | **Интерфейс** | Тёмная/светлая тема · **EN / RU** |
 
 <h3 id="ru-features">Возможности</h3>
 
-Полный список — [таблица возможностей на английском](#en-features) (**1.0.0 Vivo**). Glyph: [GUIDE.ru.md](../Glyph-MI/GUIDE.ru.md).
+Полный список — [таблица возможностей на английском](#en-features) (**1.1.0 Legato**). Glyph: [GUIDE.ru.md](../Glyph-MI/GUIDE.ru.md).
 
 <h3 id="ru-architecture">Архитектура</h3>
 

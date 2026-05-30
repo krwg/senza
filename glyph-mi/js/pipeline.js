@@ -1,5 +1,5 @@
 /**
- * Glyph 2.0 analysis pipeline (renderer).
+ * Glyph 2.2 analysis pipeline (renderer).
  */
 import { analyze } from './index.js';
 import { sanitizeGlyphFields } from './core/sanitize.js';

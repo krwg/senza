@@ -1,8 +1,11 @@
 /**
  * Optional ONNX inference (genre/mood). Graceful fallback when model missing.
+ * Auto-activates when enough labeled rows exist in glyph-log SQLite.
  */
 const path = require('path');
 const fs = require('fs');
+
+const MIN_TRAINING_ROWS = 500;
 
 let ort = null;
 try {
@@ -80,12 +83,39 @@ async function predictGenreMood(features) {
   }
 }
 
+/**
+ * @param {import('better-sqlite3').Database|null} db
+ */
+function checkOnnxTrainingReady(db) {
+  if (!db) {
+    return { ready: false, labeledRows: 0, threshold: MIN_TRAINING_ROWS, modelPresent: Boolean(findModel()) };
+  }
+  try {
+    const row = db
+      .prepare(
+        `SELECT COUNT(*) AS n FROM glyph_diff WHERE field = 'genre' AND after_val IS NOT NULL AND after_val != ''`
+      )
+      .get();
+    const labeledRows = row?.n ?? 0;
+    return {
+      ready: labeledRows >= MIN_TRAINING_ROWS,
+      labeledRows,
+      threshold: MIN_TRAINING_ROWS,
+      modelPresent: Boolean(findModel()),
+      runtime: Boolean(ort),
+    };
+  } catch {
+    return { ready: false, labeledRows: 0, threshold: MIN_TRAINING_ROWS, modelPresent: Boolean(findModel()) };
+  }
+}
+
 function onnxStatus() {
   return {
     runtime: Boolean(ort),
     model: findModel() || null,
     ready: Boolean(ort && findModel()),
+    minTrainingRows: MIN_TRAINING_ROWS,
   };
 }
 
-module.exports = { predictGenreMood, onnxStatus };
+module.exports = { predictGenreMood, onnxStatus, checkOnnxTrainingReady, MIN_TRAINING_ROWS };

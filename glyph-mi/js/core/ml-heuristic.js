@@ -57,11 +57,20 @@ export function classifyWithHeuristics({ title, artist, path, glyph = {}, genre:
   let genre = existingGenre || fromText;
   const inferred = !genre;
   if (!genre) {
-    if (bpm >= 128 && energy > 0.18) genre = 'Dance';
+    const mood = glyph.mood || '';
+    if (bpm >= 140 && energy > 0.17) genre = 'Dance';
+    else if (bpm >= 128 && energy > 0.18) genre = 'Electronic';
+    else if (mood === 'drive' && bpm >= 110) genre = 'Rock';
+    else if (mood === 'chill' && energy < 0.1) genre = 'Ambient';
     else if (energy < 0.09 && bpm < 105) genre = 'Ambient';
-    /* no default Pop — leave empty unless text/BPM strongly hints */
   }
-  if (inferred && genre) reasons.push('ml-heuristic: genre inferred');
+  if (inferred && genre) {
+    reasons.push(
+      glyph.bpmSource === 'librosa' || glyph.bpmSource === 'music-tempo'
+        ? 'ml-heuristic: genre from BPM analysis'
+        : 'ml-heuristic: genre inferred'
+    );
+  }
   if (fromText) reasons.push('ml-heuristic: genre from text/path');
 
   let mood = glyph.mood || 'chill';

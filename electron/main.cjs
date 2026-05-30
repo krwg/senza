@@ -1,4 +1,9 @@
 const { app, BrowserWindow, ipcMain, dialog, shell, nativeImage } = require('electron');
+const { exportLibrary, importLibrary } = require('./library-backup.cjs');
+const { startWatch, stopWatch } = require('./watched-folder.cjs');
+const { findLyricsForTrack, lyricAtTime } = require('./lyrics.cjs');
+const { canWriteTags } = require('./tags.cjs');
+const { onnxStatus } = require('./glyph-onnx.cjs');
 const path = require('path');
 const { existsSync } = require('fs');
 const { pathToFileURL } = require('url');
@@ -457,17 +462,17 @@ app.whenReady().then(async () => {
     if (!track) throw new Error('Track not found');
 
     const writePayload = { ...tags };
-    const isMp3 = path.extname(track.path).toLowerCase() === '.mp3';
+    const writable = canWriteTags(track.path);
 
     if (tags.coverBuffer?.length) {
       const buf = Buffer.from(tags.coverBuffer);
       await saveCoverFile(libraryRoot, track.id, buf);
       track.hasCover = true;
-      if (isMp3) writePayload.coverBuffer = buf;
+      writePayload.coverBuffer = buf;
     }
 
-    let updated = track;
-    if (isMp3) {
+    let updated;
+    if (writable) {
       updated = await writeTags(track.path, writePayload);
     } else {
       updated = {
@@ -493,6 +498,58 @@ app.whenReady().then(async () => {
     upsertTrackFeatures(libraryRoot, track).catch(() => {});
     return track;
   });
+
+  ipcMain.handle('senza:library-export', async () => {
+    const userData = app.getPath('userData');
+    const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
+      defaultPath: 'senza-library.zip',
+      filters: [{ name: 'Senza Library', extensions: ['zip'] }],
+    });
+    if (canceled || !filePath) return { ok: false, canceled: true };
+    return exportLibrary(userData, filePath);
+  });
+
+  ipcMain.handle('senza:library-import', async (_, { merge } = {}) => {
+    const userData = app.getPath('userData');
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openFile'],
+      filters: [{ name: 'Senza Library', extensions: ['zip'] }],
+    });
+    if (canceled || !filePaths[0]) return { ok: false, canceled: true };
+    const result = await importLibrary(userData, filePaths[0], { merge: Boolean(merge) });
+    if (!merge && result.importedState) {
+      await saveState(result.importedState);
+    }
+    return result;
+  });
+
+  ipcMain.handle('senza:watched-folder-start', async (_, folderPath) => {
+    return await startWatch(folderPath, async (paths) => {
+      const result = await importPaths(paths);
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('senza:watched-import', result);
+      }
+    });
+  });
+
+  ipcMain.handle('senza:watched-folder-stop', () => {
+    stopWatch();
+    return { ok: true };
+  });
+
+  ipcMain.handle('senza:pick-watched-folder', async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openDirectory'],
+    });
+    if (canceled || !filePaths[0]) return null;
+    return filePaths[0];
+  });
+
+  ipcMain.handle('senza:lyrics-for-track', async (_, { filePath }) => {
+    return findLyricsForTrack(filePath);
+  });
+
+  ipcMain.handle('senza:onnx-status', () => onnxStatus());
 
   ipcMain.handle('senza:pick-cover', async () => {
     const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {

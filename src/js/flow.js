@@ -27,15 +27,17 @@ function playCounts(history) {
   return map;
 }
 
-function scoreTrack(tr, { plays, mode, recentIds, allTracks }) {
+function scoreTrack(tr, { plays, mode, recentIds, allTracks, favoriteIds }) {
   const enriched = trackWithInferredAlbum(tr, allTracks);
   let score = 8 + metadataQuality(enriched) * 0.55;
   const p = plays.get(tr.id) || 0;
   const artistParts = splitArtists(enriched.artist).filter((a) => a && a !== UNKNOWN_ARTIST);
 
   if (mode === 'favorites') {
+    const fav = favoriteIds;
+    if (fav?.has?.(tr.id)) score += 48;
     score += Math.min(42, p * 9);
-    if (p === 0) score -= 12;
+    if (p === 0 && !fav?.has?.(tr.id)) score -= 12;
   }
   if (mode === 'rare') {
     score += Math.max(6, 32 - p * 7);
@@ -89,16 +91,24 @@ export function buildFlowWave(allTracks, playHistory, {
   mode = 'blend',
   sessionPlayed = new Set(),
   size = 28,
+  favoriteIds = null,
 } = {}) {
   const safeMode = MODES.includes(mode) ? mode : 'blend';
   const plays = playCounts(playHistory);
   const recentIds = new Set([...sessionPlayed].slice(-120));
+  const favSet = favoriteIds instanceof Set ? favoriteIds : new Set(favoriteIds || []);
 
   const pool = allTracks
     .filter((tr) => tr.path && !sessionPlayed.has(tr.id))
     .map((tr) => ({
       track: trackWithInferredAlbum(tr, allTracks),
-      score: scoreTrack(tr, { plays, mode: safeMode, recentIds, allTracks: allTracks }),
+      score: scoreTrack(tr, {
+        plays,
+        mode: safeMode,
+        recentIds,
+        allTracks,
+        favoriteIds: favSet,
+      }),
     }));
 
   if (!pool.length) {

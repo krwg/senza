@@ -21,4 +21,8 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
   },
+  test: {
+    root: __dirname,
+    include: ['tests/**/*.test.js'],
+  },
 });

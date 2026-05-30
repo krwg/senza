@@ -1,6 +1,8 @@
 /** Offline audio features for Flow / mood (Glyph 2.0). */
 const { parseMetadataFile } = require('./metadata.cjs');
-const { predictGenreMood } = require('./glyph-onnx.cjs');
+const { predictGenreMood, checkOnnxTrainingReady } = require('./glyph-onnx.cjs');
+const { detectBpm } = require('./bpm-analyzer.cjs');
+const { replayGainFromParsed } = require('./tags.cjs');
 
 function determineMood(bpm, energy) {
   const b = Number(bpm) || 100;
@@ -23,20 +25,29 @@ async function extractGlyphFeatures(filePath, meta = {}) {
   let bpm = null;
   let energy = estimateEnergyFromGenre(meta.genre);
   let brightness = 1400;
+  let replayGain = null;
+  let bpmSource = null;
 
   try {
     const parsed = await parseMetadataFile(filePath);
     const common = parsed.common || {};
+    replayGain = replayGainFromParsed(parsed);
     bpm =
       common.bpm ||
       (parsed.native?.TBPM && Number(parsed.native.TBPM)) ||
-      (parsed.format?.bitrate ? Math.min(140, 80 + parsed.format.bitrate / 10000) : null);
+      null;
 
     if (parsed.format?.duration && parsed.format.bitrate) {
       energy = Math.min(0.35, 0.06 + parsed.format.bitrate / 320000);
     }
   } catch {
     /* optional */
+  }
+
+  const detected = await detectBpm(filePath, { existingBpm: bpm });
+  if (detected?.bpm) {
+    bpm = detected.bpm;
+    bpmSource = detected.source;
   }
 
   if (!bpm) bpm = energy > 0.16 ? 120 : 90;
@@ -47,21 +58,20 @@ async function extractGlyphFeatures(filePath, meta = {}) {
   try {
     const onnx = await predictGenreMood({ bpm, energy, brightness });
     if (onnx?.genre && !genreHint) genreHint = onnx.genre;
-    if (onnx?.provider) {
-      /* stored in glyph.ml for UI */
-    }
   } catch {
     /* optional onnx */
   }
 
   return {
     bpm: Math.round(bpm),
+    bpmSource: bpmSource || (meta.bpm ? 'tags' : 'heuristic'),
     energy: Math.round(energy * 1000) / 1000,
     brightness: Math.round(brightness),
     mood,
     genreHint: genreHint || undefined,
+    replayGain: replayGain || undefined,
     analyzedAt: new Date().toISOString(),
   };
 }
 
-module.exports = { extractGlyphFeatures, determineMood };
+module.exports = { extractGlyphFeatures, determineMood, checkOnnxTrainingReady };

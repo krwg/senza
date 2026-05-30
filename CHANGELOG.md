@@ -2,6 +2,53 @@
 
 All notable changes to **Senza** are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/). Versioning follows [SemVer](https://semver.org/).
 
+## [1.1.0] — Legato — 2026-05-30
+
+**Legato** — smooth, connected listening: crossfade, multi-format tags, portable library, and a fuller player. **Glyph2.2-O** — BPM-aware genre heuristics.
+
+### Added
+
+#### Roadmap (Vivo → Legato)
+- **Multi-format tag write** — MP3, FLAC, OGG, M4A, AAC, WAV via `node-taglib-sharp` (covers embedded where supported).
+- **BPM at import** — librosa (optional Python) + `music-tempo` JS fallback; stored in `track.glyph.bpmSource`.
+- **Library export/import** — `senza-library.zip` (Settings → Library).
+- **ONNX genre readiness** — threshold check (500 labeled genre rows); uses model when present.
+
+#### Player & UX
+- **Shuffle / Repeat** (off · all · one) in player bar.
+- **Hotkeys** — Space, ←/→ seek, Shift+←/→ prev/next, M mute, L favorite.
+- **Media keys** — OS media session (play/pause/prev/next/seek).
+- **Crossfade** — 0–8 s (Settings → Playback).
+- **ReplayGain** — optional normalization from file tags.
+- **Lyrics** — sidecar `.lrc` sync in player bar.
+- **Favorites** — heart on tracks + sidebar view; Flow «Favorites» uses explicit favorites.
+- **Recently Played** — sidebar view from play history.
+- **Smart playlists** — Not played lately, Favorites, Recently added (auto rules).
+- **Fuzzy search** — typo-tolerant library search.
+- **Accent color** — custom Floke gold (Settings → Appearance).
+- **Watched folder** — auto-import new files (Settings → Library).
+- **Sidebar customization** — show/hide sections, reorder (↑↓) in Settings → Appearance.
+- **Glyph2.2-O** — BPM-aware genre heuristics (librosa / music-tempo sources).
+
+#### Quality & platforms
+- **Vitest** — unit tests for search, Flow, smart playlists (`npm test`).
+- **macOS / Linux builds** — electron-builder targets (dmg/zip, AppImage/deb).
+
+### Fixed
+- **Recently played** — tracks now play (queue context + playById fallback).
+- **Shuffle + click** — UI matched wrong track; shuffle index fixed on explicit play.
+- **Crossfade** — single-element volume fade (no dual-audio swap glitch).
+- **Repeat** — distinct icon for repeat-one (badge «1»).
+- **Track rows** — aligned grid (index, ♥, title, artist, actions).
+- **Settings / Library** — field rows, path block, action button layout.
+
+### Changed
+- Release codename **Legato**; version **1.1.0**; Glyph **2.2-O**.
+- Tag editor hint reflects all writable formats.
+- Flow favorites mode weights explicit ♥ tracks.
+
+---
+
 ## [1.0.0] — Vivo — 2026-05-28
 
 First major release: **Glyph2.1-O** metadata intelligence, **Flow** home experience, expanded **Journal**, and a polished desktop shell.
@@ -83,5 +130,6 @@ First major release: **Glyph2.1-O** metadata intelligence, **Flow** home experie
 
 ---
 
+[1.1.0]: https://github.com/FlokeStudio/Senza/releases/tag/v1.1.0
 [1.0.0]: https://github.com/FlokeStudio/Senza/releases/tag/v1.0.0
 [0.1.0]: https://github.com/FlokeStudio/Senza/releases/tag/v0.1.0

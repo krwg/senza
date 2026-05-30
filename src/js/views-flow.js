@@ -27,7 +27,7 @@ export function renderFlowView(locale, { mode, wave = [], generating = false, tr
       ${ambientHtml()}
       <div class="flow-body">
         <header class="flow-header">
-          ${glyphEnabled ? `<span class="flow-brand">GLYPH</span><span class="flow-version">2.1-O</span>` : `<span class="flow-brand flow-brand--senza">SENZA</span>`}
+          ${glyphEnabled ? `<span class="flow-brand">GLYPH</span><span class="flow-version">2.2-O</span>` : `<span class="flow-brand flow-brand--senza">SENZA</span>`}
         </header>
 
         <div class="flow-center">

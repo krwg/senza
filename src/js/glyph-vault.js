@@ -62,7 +62,7 @@ export function renderGlyphVaultSection(scan, locale, loading = false, glyphEnab
       <div class="glyph-vault-head">
         <span class="glyph-mark">◇</span>
         <strong>Glyph</strong>
-        <span class="glyph-version">2.1-O</span>
+        <span class="glyph-version">2.2-O</span>
       </div>
       <p class="glyph-vault-hint">${t('glyph.disabledVault', locale)}</p>
     </section>`;
@@ -121,7 +121,7 @@ export function renderGlyphVaultSection(scan, locale, loading = false, glyphEnab
       <div class="glyph-vault-head">
         <span class="glyph-mark">◇</span>
         <strong>Glyph</strong>
-        <span class="glyph-version">2.1-O</span>
+        <span class="glyph-version">2.2-O</span>
         <button type="button" class="btn btn-sm" id="btnVaultGlyphRescan">${t('glyph.vaultRescan', locale)}</button>
         <button type="button" class="btn btn-sm btn-primary" id="btnGlyphBatch">${t('glyph.batchRun', locale)}</button>
       </div>

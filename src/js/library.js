@@ -1,6 +1,22 @@
 import { splitArtists, artistSlug, trackIncludesArtist } from './artists.js';
+import { fuzzyFilterTracks } from './search.js';
 
 export { trackIncludesArtist };
+
+export function filterTracks(tracks, query, { fuzzy = true } = {}) {
+  const q = query.trim();
+  if (!q) return tracks;
+  if (fuzzy) {
+    return fuzzyFilterTracks(tracks, q, { splitArtists });
+  }
+  const lower = q.toLowerCase();
+  return tracks.filter((t) => {
+    const artistHay = splitArtists(t.artist).join(' ');
+    return [t.title, artistHay, t.artist, t.album, t.genre].some((f) =>
+      String(f || '').toLowerCase().includes(lower)
+    );
+  });
+}
 
 export function groupBy(tracks, key) {
   const map = new Map();
@@ -35,17 +51,6 @@ export function uniqueArtists(tracks) {
     }
   }
   return [...map.values()].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
-}
-
-export function filterTracks(tracks, query) {
-  const q = query.trim().toLowerCase();
-  if (!q) return tracks;
-  return tracks.filter((t) => {
-    const artistHay = splitArtists(t.artist).join(' ');
-    return [t.title, artistHay, t.artist, t.album, t.genre].some((f) =>
-      String(f || '').toLowerCase().includes(q)
-    );
-  });
 }
 
 export function trackNeedsAttention(t, unknownArtist = 'Unknown Artist') {

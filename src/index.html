@@ -79,16 +79,21 @@
           </div>
         </button>
         <div class="player-controls">
+          <button type="button" class="icon-btn icon-host" id="btnShuffle" data-icon="shuffle" title="Shuffle" aria-label="Shuffle"></button>
           <button type="button" class="icon-btn icon-host" id="btnPrev" data-icon="prev" aria-label="Previous"></button>
           <button type="button" class="icon-btn icon-btn-lg icon-host" id="btnPlay" data-icon="play" aria-label="Play"></button>
           <button type="button" class="icon-btn icon-host" id="btnNext" data-icon="next" aria-label="Next"></button>
+          <button type="button" class="icon-btn icon-host" id="btnRepeat" data-icon="repeat" title="Repeat" aria-label="Repeat"></button>
         </div>
         <div class="player-extra">
           <button type="button" class="icon-btn icon-host" id="btnQueue" data-icon="queue" title="Queue" aria-label="Queue"></button>
+          <button type="button" class="icon-btn icon-host" id="btnLyrics" data-icon="lyrics" title="Lyrics" aria-label="Lyrics"></button>
           <input type="range" id="volume" min="0" max="1" step="0.01" value="0.85" class="range-input range-volume" aria-label="Volume">
         </div>
       </div>
+      <div class="player-lyrics hidden" id="playerLyrics" aria-live="polite"></div>
       <audio id="audio" preload="metadata"></audio>
+      <audio id="audioCrossfade" preload="metadata" class="hidden"></audio>
     </footer>
   </div>
 
@@ -162,7 +167,7 @@
         <button type="button" class="btn" id="tagCover" data-i18n="tags.cover">Cover…</button>
         <button type="submit" class="btn btn-primary" data-i18n="tags.save">Save tags</button>
       </div>
-      <p class="tag-hint" id="tagHint" data-i18n="tags.mp3hint">MP3 tag writing supported. Other formats: read-only for now.</p>
+      <p class="tag-hint" id="tagHint" data-i18n="tags.formatsHint">Tag writing: MP3, FLAC, OGG, M4A, AAC, WAV.</p>
       </form>
     </div>
   </aside>

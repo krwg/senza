@@ -54,4 +54,16 @@ contextBridge.exposeInMainWorld('senza', {
   glyphLogStats: () => ipcRenderer.invoke('senza:glyph-log-stats'),
   glyphLogExportDataset: (opts) => ipcRenderer.invoke('senza:glyph-log-export-dataset', opts || {}),
   glyphAnalytics: () => ipcRenderer.invoke('senza:glyph-analytics'),
+  libraryExport: () => ipcRenderer.invoke('senza:library-export'),
+  libraryImport: (opts) => ipcRenderer.invoke('senza:library-import', opts || {}),
+  watchedFolderStart: (path) => ipcRenderer.invoke('senza:watched-folder-start', path),
+  watchedFolderStop: () => ipcRenderer.invoke('senza:watched-folder-stop'),
+  pickWatchedFolder: () => ipcRenderer.invoke('senza:pick-watched-folder'),
+  lyricsForTrack: (payload) => ipcRenderer.invoke('senza:lyrics-for-track', payload),
+  onnxStatus: () => ipcRenderer.invoke('senza:onnx-status'),
+  onWatchedImport: (cb) => {
+    const handler = (_, result) => cb(result);
+    ipcRenderer.on('senza:watched-import', handler);
+    return () => ipcRenderer.removeListener('senza:watched-import', handler);
+  },
 });
