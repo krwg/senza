@@ -1,4 +1,3 @@
-/** Split multi-artist strings into a normalized list. */
 const FEAT_RE = /\s+(?:feat\.?|ft\.?|featuring)\s+/i;
 const AND_RE = /\s+&\s+/;
 const COMMA_RE = /\s*,\s*/;
@@ -41,17 +40,17 @@ function dedupe(list) {
   return out;
 }
 
-/** ID3-friendly: "A; B; C" */
+
 export function joinArtists(artists) {
   return splitArtists(Array.isArray(artists) ? artists.join(', ') : artists).join('; ');
 }
 
-/** Display: "A, B, C" */
+
 export function formatArtistsDisplay(artists) {
   return splitArtists(Array.isArray(artists) ? artists.join('; ') : artists).join(', ');
 }
 
-/** Stable folder/id for artist avatars on disk. */
+
 export function artistSlug(name) {
   const s = String(name || '').trim();
   if (!s) return 'unknown-artist';
@@ -73,9 +72,7 @@ export function trackIncludesArtist(track, artistName) {
   return splitArtists(track.artist).some((a) => a.toLowerCase() === key);
 }
 
-/**
- * Parse "Artists - Title" when artists contain commas.
- */
+
 export function parseArtistTitle(filenameBase) {
   const dash = findTitleDash(filenameBase);
   if (!dash) return null;

@@ -14,7 +14,7 @@ We pledge to make participation in the Senza project a harassment-free experienc
 
 Project maintainers may remove, edit, or reject contributions and ban contributors for behavior they deem inappropriate.
 
-Report issues to the repository maintainer via GitHub or the contact listed on [FlokeStudio](https://github.com/FlokeStudio).
+Report issues to the repository maintainer via GitHub or the contact listed on [krwg](https://github.com/krwg).
 
 ## Attribution
 

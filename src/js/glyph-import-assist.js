@@ -1,7 +1,7 @@
 import { runGlyphAnalysis } from './glyph-ui.js';
 import { trackNeedsAttention } from './library.js';
 
-/** Quick scan after import — how many new tracks Glyph can improve. */
+
 export async function scanImportedTracks(importedTracks, state, locale, api) {
   if (!importedTracks?.length || !api) {
     return { checked: 0, canImprove: 0, total: 0 };
@@ -18,7 +18,7 @@ export async function scanImportedTracks(importedTracks, state, locale, api) {
       const score = analysis?.result?.confidence?.score ?? 0;
       if (score >= 52) canImprove += 1;
     } catch {
-      /* skip */
+      
     }
   }
 

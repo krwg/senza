@@ -1,5 +1,3 @@
-/** Local 64-dim title embedding via hashed tokens (no LLM). */
-
 const DIM = 64;
 
 function tokenize(text) {

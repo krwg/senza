@@ -4,8 +4,8 @@
   "description": "Offline-first music library and player — your collection, your files.",
   "main": "electron/main.cjs",
   "type": "module",
-  "author": "Floke (krwg)",
-  "homepage": "https://github.com/FlokeStudio/Senza",
+  "author": "krwg",
+  "homepage": "https://github.com/krwg/senza",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -85,7 +85,7 @@
       ],
       "category": "Audio",
       "icon": "build/icon.png",
-      "maintainer": "Floke Studio",
+      "maintainer": "krwg",
       "synopsis": "Offline-first music library and player"
     }
   },

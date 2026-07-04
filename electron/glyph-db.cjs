@@ -1,4 +1,3 @@
-/** Glyph 2.1 — library feature index in SQLite (glyph-log.sqlite). */
 const {
   upsertTrackFeaturesSql,
   upsertManyFeaturesSql,

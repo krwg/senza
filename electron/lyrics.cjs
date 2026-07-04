@@ -33,7 +33,7 @@ async function findLyricsForTrack(filePath) {
       const text = await fs.readFile(p, 'utf8');
       return { lines: parseLrc(text), path: p };
     } catch {
-      /* try next */
+      
     }
   }
   return { lines: [], path: null };

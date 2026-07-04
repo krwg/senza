@@ -1,5 +1,3 @@
-/** Flow ambient — palette from cover, smooth pulse 0–10 synced to playback time + BPM. */
-
 function hashStr(s) {
   let h = 0;
   for (let i = 0; i < s.length; i += 1) h = (h * 31 + s.charCodeAt(i)) >>> 0;
@@ -118,7 +116,7 @@ export function applyFlowAmbient(root, track, playing) {
   if (!playing || !track) resetBeatState(root);
 }
 
-/** Prefer stored BPM; avoid generic 118 default when possible. */
+
 function resolveBpm(track) {
   const raw = Number(track?.glyph?.bpm);
   if (raw >= 72 && raw <= 196 && raw !== 118) return raw;
@@ -144,10 +142,7 @@ function lerp(a, b, t) {
   return a + (b - a) * t;
 }
 
-/**
- * Continuous pulse 0–10 from audio.currentTime (phase within beat), smoothed each frame.
- * No discrete step "jumps" — CSS reads --flow-beat (0–1) and --flow-pulse (0–10).
- */
+
 export function startFlowBeatSync(root, audioEl, track) {
   stopFlowBeatSync();
   if (!root || !audioEl) return;

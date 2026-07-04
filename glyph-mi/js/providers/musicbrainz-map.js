@@ -1,5 +1,3 @@
-/** Map MusicBrainz API JSON to Glyph tag fields. */
-
 function pickYear(dateStr) {
   const m = String(dateStr || '').match(/\b(19|20)\d{2}\b/);
   return m ? m[0] : '';

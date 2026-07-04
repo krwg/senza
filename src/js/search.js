@@ -1,5 +1,3 @@
-/** Fuzzy search helpers for library filtering. */
-
 function normalize(s) {
   return String(s || '')
     .toLowerCase()
@@ -37,11 +35,7 @@ function fuzzyScore(hay, needle) {
   return sim >= 0.72 ? sim : 0;
 }
 
-/**
- * @param {object[]} tracks
- * @param {string} query
- * @param {{ splitArtists?: (s: string) => string[] }} opts
- */
+
 export function fuzzyFilterTracks(tracks, query, { splitArtists } = {}) {
   const q = normalize(query);
   if (!q) return tracks;

@@ -1,6 +1,3 @@
-/**
- * Batch Glyph — analyze library, preview, apply.
- */
 import { runGlyphAnalysis } from './glyph-ui.js';
 import { buildGlyphDiff } from './glyph-diff.js';
 import { buildTagPatch, countPatchFields } from './glyph-tags.js';

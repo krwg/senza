@@ -1,6 +1,6 @@
 import { t } from './i18n.js';
 
-/** Apple-style hint control: ? button with tooltip on hover/focus/click. */
+
 export function hintButton(hintKey, locale, { labelKey } = {}) {
   const text = t(hintKey, locale);
   const label = labelKey ? t(labelKey, locale) : '';

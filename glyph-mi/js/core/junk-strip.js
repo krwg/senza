@@ -1,5 +1,3 @@
-/** Strip download-site junk from filenames (shared by normalize + parser). */
-
 const JUNK_BRACKET = [
   /\s*[\[\(](?:official\s*)?video(?:\s*clip)?[\]\)]/gi,
   /\s*[\[\(](?:official\s*)?(?:audio|lyrics?|mv|music\s*video)[\]\)]/gi,

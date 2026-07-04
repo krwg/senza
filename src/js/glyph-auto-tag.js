@@ -5,9 +5,7 @@ import { sanitizeGlyphFields } from '@glyph/core/sanitize.js';
 import { pickTags, glyphMetaFromAnalysis } from './glyph-learn.js';
 import { logGlyphAuto, logGlyphTelemetry, GLYPH_EVENTS } from './glyph-telemetry.js';
 
-/**
- * Analyze and write tags for imported tracks (Glyph 1.0-O — main pipeline).
- */
+
 export async function autoTagTracks(tracks, state, locale, api, options = {}) {
   const minScore = options.minScore ?? 32;
   const minFields = options.minFields ?? 1;

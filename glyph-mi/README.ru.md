@@ -1,12 +1,5 @@
-# glyph-mi (зеркало)
+# Glyph MI (mirror)
 
-Копия движка [Glyph-MI](https://github.com/FlokeStudio/Glyph-MI) для сборки Senza.
+Копия движка [glyph-mi](https://github.com/krwg/glyph-mi) для сборки Senza.
 
-**Документация:** [Glyph-MI/GUIDE.ru.md](../../Glyph-MI/GUIDE.ru.md) (единый канон).
-
-```bash
-npm run glyph:sync-mirror   # Glyph-MI → сюда
-npm run glyph:push-mirror   # js/ → Glyph-MI
-```
-
-Версия в Senza 1.0.0 Vivo: **Glyph2.1-O**.
+Синхронизация: `npm run glyph:sync-mirror` / `glyph:push-mirror` из корня Senza.

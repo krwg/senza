@@ -1,7 +1,7 @@
 import { buildConfidence } from '@glyph/core/confidence.js';
 import { splitArtists } from './artists.js';
 
-/** Merge online lookup into an existing Glyph result. */
+
 export function mergeOnlineFields(base, onlineFields, provider, reasons = []) {
   const fields = { ...(base?.fields || {}) };
   const rs = [...(base?.confidence?.reasons || []), ...reasons];
@@ -66,7 +66,7 @@ export async function enrichWithOnline(api, track, baseResult, settings = {}) {
         ]);
       }
     } catch {
-      /* optional */
+      
     }
   }
 
@@ -89,7 +89,7 @@ export async function enrichWithOnline(api, track, baseResult, settings = {}) {
         ]);
       }
     } catch {
-      /* optional */
+      
     }
   }
 

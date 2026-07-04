@@ -2,7 +2,7 @@ import { parseLibraryPath } from '@glyph/core/library-path.js';
 
 const UNKNOWN_ALBUM = 'Unknown Album';
 
-/** Infer missing album from Senza folder layout and album mates — no training required. */
+
 export function inferAlbumForTrack(track, allTracks = []) {
   const current = String(track.album || '').trim();
   if (current && current !== UNKNOWN_ALBUM) {

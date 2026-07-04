@@ -1,4 +1,3 @@
-/** Glyph diff preview — before → after per field. */
 import { formatArtistsDisplay } from './artists.js';
 import { t } from './i18n.js';
 
@@ -20,9 +19,6 @@ function norm(v) {
   return String(v ?? '').trim();
 }
 
-/**
- * @returns {{ rows: Array, hasChanges: boolean }}
- */
 export function buildGlyphDiff(track, suggestedFields) {
   const rows = [];
   for (const key of FIELDS) {

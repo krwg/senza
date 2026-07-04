@@ -11,7 +11,7 @@
 |-----|-----|
 | Senza (приложение) | `E:\Floke Dev\Senza Dev` |
 | JS-мост (временно) | `E:\Floke Dev\Glyph` |
-| **Glyph MI** (публичный git) | https://github.com/FlokeStudio/Glyph-MI |
+| **Glyph MI** (публичный git) | https://github.com/krwg/glyph-mi |
 | **Glyph Lab** (приватно) | `Senza Dev/glyph-lab/` ← ты здесь |
 | Журнал на ПК | `%APPDATA%\senza\library\glyph\` (или userData Senza) |
 | Публичная дока | `Floke Dev/Glyph-MI/GUIDE.ru.md` |
@@ -108,7 +108,7 @@ npm run glyph-lab
 1. Взять pack из `data/packs/`.
 2. Проверить вручную 10–20 примеров.
 3. Положить в репо **Glyph-MI** → `knowledge/public/` (например `core-v1.json`).
-4. Commit + push в https://github.com/FlokeStudio/Glyph-MI
+4. Commit + push в https://github.com/krwg/glyph-mi
 5. Позже — Senza подтянет пакет при сборке / обновлении.
 
 **Не коммитить:** `data/imports/`, сырой `learn.jsonl`, `data/private/`.

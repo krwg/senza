@@ -1,9 +1,6 @@
 import { t } from './i18n.js';
 
-/** @typedef {{ id: string }} SettingsNavItem */
-/** @typedef {{ id: string, labelKey: string, items: SettingsNavItem[] }} SettingsNavGroup */
 
-/** @type {SettingsNavGroup[]} */
 export const SETTINGS_NAV_GROUPS = [
   {
     id: 'app',

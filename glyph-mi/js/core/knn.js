@@ -1,6 +1,3 @@
-/**
- * K-nearest neighbors over library feature rows (Glyph 2.0 memory).
- */
 import { vectorSimilarity } from './title-vector.js';
 
 function normArtist(a) {
@@ -27,10 +24,7 @@ function fieldConsensus(neighbors, field) {
   return bestN >= 2 ? { value: best, count: bestN } : null;
 }
 
-/**
- * @param {object} query — { trackId, title, artist, album, genre, vec, bpm, energy }
- * @param {object[]} libraryRows — from SQLite index
- */
+
 export function knnSuggest(query, libraryRows, { k = 8, minSimilarity = 0.35 } = {}) {
   const qid = query.trackId;
   const qVec = query.vec;

@@ -1,5 +1,3 @@
-/** Client helpers for Glyph learning log (local only). */
-
 export function pickTags(obj) {
   if (!obj) return {};
   return {
@@ -39,13 +37,13 @@ export function glyphMetaFromAnalysis(analysis) {
   };
 }
 
-/** Legacy jsonl + SQLite telemetry (glyph_log / glyph_diff). */
+
 export async function logGlyphEvent(api, settings, trackId, event, data) {
   const track = data.track || { id: trackId, path: data.path || '' };
 
   if (api?.glyphLog && settings?.glyphLogEnabled !== false) {
     const { logGlyphTelemetry, GLYPH_EVENTS } = await import(
-      /* @vite-ignore */ './glyph-telemetry.js'
+      './glyph-telemetry.js'
     );
     const legacyToSql = {
       glyph_apply_all: GLYPH_EVENTS.APPLY,
@@ -78,6 +76,6 @@ export async function logGlyphEvent(api, settings, trackId, event, data) {
       ...data,
     });
   } catch {
-    /* non-fatal */
+    
   }
 }

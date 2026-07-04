@@ -4,7 +4,7 @@
 
 | Version | Supported |
 |---------|-----------|
-| Latest release on [GitHub](https://github.com/FlokeStudio/Senza/releases) | Yes |
+| Latest release on [GitHub](https://github.com/krwg/senza/releases) | Yes |
 | Older tags | Best effort |
 
 Senza is a **local desktop** application. It reads and writes audio files and metadata on disk. It does **not** require sign-in and does **not** upload your library to Floke servers.
@@ -13,7 +13,7 @@ Senza is a **local desktop** application. It reads and writes audio files and me
 
 **Please do not file public issues** for undisclosed security problems.
 
-1. Use **GitHub Security → Advisories → Report a vulnerability** on [FlokeStudio/Senza](https://github.com/FlokeStudio/Senza), **or**
+1. Use **GitHub Security → Advisories → Report a vulnerability** on [krwg/senza](https://github.com/krwg/senza), **or**
 2. Contact the maintainer via a private channel on their GitHub profile.
 
 Include:

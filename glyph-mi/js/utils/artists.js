@@ -1,4 +1,3 @@
-/** Split multi-artist strings (shared across Floke apps). */
 const FEAT_RE = /\s+(?:feat\.?|ft\.?|featuring)\s+/i;
 const AND_RE = /\s+&\s+/;
 const COMMA_RE = /\s*,\s*/;

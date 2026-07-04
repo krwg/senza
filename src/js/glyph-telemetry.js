@@ -1,6 +1,3 @@
-/**
- * Glyph telemetry client — SQLite log via Electron IPC.
- */
 import { GLYPH_EVENTS, pickTagFields } from '@glyph/core/logger.js';
 import { pickTags } from './glyph-learn.js';
 
@@ -30,13 +27,7 @@ export function buildGlyphContext(track, state, extra = {}) {
   };
 }
 
-/**
- * @param {object} api — window.senza
- * @param {object} settings
- * @param {object} track
- * @param {string} event — GLYPH_EVENTS.*
- * @param {object} opts
- */
+
 export async function logGlyphTelemetry(api, settings, track, event, opts = {}) {
   if (!api?.glyphLog) return null;
   if (!loggingEnabled(settings)) return null;

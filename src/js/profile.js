@@ -25,7 +25,7 @@ export function randomDisplayName(seed = randomProfileSeed()) {
   return `${adj}-${noun}-${num}`;
 }
 
-/** GitHub-style identicon, 32×32 cells rendered to canvas size. */
+
 export function drawIdenticon(canvas, seed, size = 128) {
   const ctx = canvas.getContext('2d');
   const cells = 32;

@@ -13,7 +13,7 @@ Thanks for helping improve Senza. This project is **GPL-3.0** — contributions 
 ## Quick setup
 
 ```bash
-git clone https://github.com/FlokeStudio/Senza.git
+git clone https://github.com/krwg/senza.git
 cd Senza
 npm install
 ```
@@ -88,7 +88,7 @@ See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for module map.
 ## Releases
 
 Release body drafts live in `docs/release-notes-v*-github.md`.  
-Follow [Floke release notes style](https://github.com/FlokeStudio/Floke-design/blob/main/docs/release-notes-style.md).
+Follow [Floke release notes style](https://github.com/krwg/Floke-design/blob/main/docs/release-notes-style.md).
 
 ## Community docs
 

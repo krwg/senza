@@ -84,7 +84,7 @@ export function journalStats(history, tracksById, unknownArtist = 'Unknown Artis
   };
 }
 
-/** Music Time Capsule — entry from ~1 year ago (±7 days). */
+
 export function findTimeCapsule(history) {
   if (!history?.length) return null;
   const target = Date.now() - 365 * 24 * 60 * 60 * 1000;

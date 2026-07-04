@@ -1311,7 +1311,7 @@ async function batchFixAlbumsWithGlyph() {
       });
       fixed += 1;
     } catch {
-      /* skip */
+      
     }
   }
   await loadState();
@@ -1654,7 +1654,7 @@ async function refreshGlyphOnlineStatus() {
     const st = await api.glyphOnlineStatus();
     fpcalc = Boolean(st?.fpcalc);
   } catch {
-    /* ignore */
+    
   }
   const parts = [];
   if (mbOn) parts.push(`<span class="glyph-status-ok">${t('glyph.onlineMB', locale)}</span>`);

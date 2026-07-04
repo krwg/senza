@@ -1,7 +1,3 @@
-/**
- * Optional ONNX inference (genre/mood). Graceful fallback when model missing.
- * Auto-activates when enough labeled rows exist in glyph-log SQLite.
- */
 const path = require('path');
 const fs = require('fs');
 
@@ -41,9 +37,7 @@ async function getSession() {
   return sessionPromise;
 }
 
-/**
- * @param {{ bpm, energy, brightness }} features
- */
+
 async function predictGenreMood(features) {
   const session = await getSession();
   if (!session) return null;
@@ -83,9 +77,7 @@ async function predictGenreMood(features) {
   }
 }
 
-/**
- * @param {import('better-sqlite3').Database|null} db
- */
+
 function checkOnnxTrainingReady(db) {
   if (!db) {
     return { ready: false, labeledRows: 0, threshold: MIN_TRAINING_ROWS, modelPresent: Boolean(findModel()) };

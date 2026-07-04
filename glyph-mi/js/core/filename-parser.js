@@ -1,7 +1,3 @@
-/**
- * Aggressive filename → metadata (Glyph 2.0).
- * Handles junk from downloads: [4K], type beat, slowed+reverb, etc.
- */
 import { parseArtistTitle, splitArtists, joinArtists } from '../utils/artists.js';
 import { basename as baseFromPath, extractYear, extractTrackNo } from './normalize.js';
 import { stripFilenameJunk } from './junk-strip.js';

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Sync Floke Dev/Glyph-MI → Senza Dev/glyph-mi (js, glyph_mi, knowledge/public). */
+
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';

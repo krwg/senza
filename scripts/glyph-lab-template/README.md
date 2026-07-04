@@ -20,6 +20,6 @@ glyph-lab/
 ## Publish to public Glyph-MI
 
 Only after review: copy sanitized packs to  
-[Glyph-MI](https://github.com/FlokeStudio/Glyph-MI) → `knowledge/public/`.
+[glyph-mi](https://github.com/krwg/glyph-mi) → `knowledge/public/`.
 
 Never commit `data/` to Senza or Glyph-MI without scrubbing.

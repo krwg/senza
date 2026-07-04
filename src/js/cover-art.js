@@ -1,4 +1,3 @@
-/** Deterministic gradient when no cover file (Auto Cover Studio lite). */
 function hashStr(s) {
   let h = 0;
   for (let i = 0; i < s.length; i += 1) h = (h * 31 + s.charCodeAt(i)) >>> 0;

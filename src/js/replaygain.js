@@ -1,5 +1,3 @@
-/** ReplayGain volume adjustment (EBU R128 / ID3 RG tags). */
-
 export function replayGainDb(track, mode = 'track') {
   const rg = track?.glyph?.replayGain || track?.replayGain;
   if (!rg) return 0;

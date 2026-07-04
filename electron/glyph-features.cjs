@@ -1,4 +1,3 @@
-/** Offline audio features for Flow / mood (Glyph 2.0). */
 const { parseMetadataFile } = require('./metadata.cjs');
 const { predictGenreMood, checkOnnxTrainingReady } = require('./glyph-onnx.cjs');
 const { detectBpm } = require('./bpm-analyzer.cjs');
@@ -41,7 +40,7 @@ async function extractGlyphFeatures(filePath, meta = {}) {
       energy = Math.min(0.35, 0.06 + parsed.format.bitrate / 320000);
     }
   } catch {
-    /* optional */
+    
   }
 
   const detected = await detectBpm(filePath, { existingBpm: bpm });
@@ -59,7 +58,7 @@ async function extractGlyphFeatures(filePath, meta = {}) {
     const onnx = await predictGenreMood({ bpm, energy, brightness });
     if (onnx?.genre && !genreHint) genreHint = onnx.genre;
   } catch {
-    /* optional onnx */
+    
   }
 
   return {

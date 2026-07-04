@@ -1,5 +1,3 @@
-/** Keyboard shortcuts and media session integration. */
-
 export function initHotkeys({ player, audio, getLocale, onToggleFavorite, getCurrentTrack }) {
   const muted = { value: false, prevVolume: 0.85 };
 

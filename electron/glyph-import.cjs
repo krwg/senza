@@ -33,7 +33,7 @@ async function importExportToPrivatePack(libraryRoot, { exportDir } = {}) {
 
   const jsonlPath = path.join(dir, 'learn.jsonl');
   const raw = await fs.readFile(jsonlPath, 'utf8');
-  const lines = raw.split('\n').filter(Boolean);
+  const lines = raw.split('\n).filter(Boolean);
   const examples = [];
   const seen = new Set();
 

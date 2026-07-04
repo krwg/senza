@@ -4,10 +4,7 @@ import { buildConfidence } from '../core/confidence.js';
 import { sanitizeGlyphFields } from '../core/sanitize.js';
 import { splitArtists } from '../utils/artists.js';
 
-/**
- * Glyph MI mirror in JS: rules + bundled public knowledge packs.
- * Same provider id as Python MI for UI consistency.
- */
+
 export function analyzeMI(input, options = {}) {
   const base = analyzeRules(input);
   const packs = options.knowledgePacks || [];

@@ -7,8 +7,8 @@ const AUDIO_EXT = new Set(['.mp3', '.flac', '.wav', '.ogg', '.m4a', '.aac']);
 function sanitizeSegment(name) {
   return (
     String(name || 'Unknown')
-      .replace(/[<>:"/\\|?*\x00-\x1f]/g, '_')
-      .replace(/\s+/g, ' ')
+      .replace(/[<>:"/\\?*\x0-\xf]/g, '_')
+      .replace(/\s/g, ' ')
       .trim()
       .slice(0, 120) || 'Unknown'
   );
@@ -31,10 +31,6 @@ async function uniqueDestPath(dir, fileName) {
   return path.join(dir, `${base}-${Date.now()}${ext}`);
 }
 
-/**
- * Copy audio into library/music/Artist/Album/ if not already inside library.
- * @returns {Promise<string>} final path used in library
- */
 async function resolveLibraryAudioPath(libraryRoot, sourcePath, meta) {
   const musicRoot = path.join(libraryRoot, 'music');
   const normalizedSource = path.normalize(sourcePath);

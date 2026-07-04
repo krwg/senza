@@ -1,6 +1,3 @@
-/**
- * Inductive learned rules + 60-day decay (Glyph 2.1).
- */
 const path = require('path');
 const fs = require('fs/promises');
 const fsSync = require('fs');

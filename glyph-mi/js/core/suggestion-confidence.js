@@ -13,9 +13,7 @@ function isWeakValue(v, key) {
   return false;
 }
 
-/**
- * Confidence for applying suggestions vs current tags (per-track, dynamic).
- */
+
 export function evaluateSuggestion(currentTags = {}, suggestedFields = {}, base = {}) {
   const reasons = [...(base.reasons || [])];
   const sources = base.sources || [];

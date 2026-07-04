@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Optional BPM via librosa — used when Python + librosa are installed."""
 from __future__ import annotations
 

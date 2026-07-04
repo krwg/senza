@@ -1,8 +1,3 @@
-/**
- * Glyph 2.0 local ML layer (no ONNX file required).
- * Uses audio profile + text features; ONNX can replace later via same interface.
- */
-
 const GENRES = [
   'Hip-Hop',
   'Pop',

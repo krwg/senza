@@ -6,11 +6,7 @@ export { splitArtists, joinArtists, parseArtistTitle } from './utils/artists.js'
 export { analyzeRules, analyzeMI, analyzeLocal, isLocalAgentAvailable };
 export { applyKnowledge } from './knowledge.js';
 
-/**
- * Analyze one track and suggest metadata.
- * @param {object} input — { filePath, tags?, context? }
- * @param {object} options — { tryLocal?, provider?: 'rules'|'local', ollamaUrl?, model? }
- */
+
 export async function analyze(input, options = {}) {
   const provider = options.provider || 'mi';
 
@@ -29,7 +25,7 @@ export async function analyze(input, options = {}) {
   return analyzeMI(input, options);
 }
 
-/** Batch analyze (sequential; local agent may be slow). */
+
 export async function analyzeBatch(items, options = {}) {
   const results = [];
   for (const item of items) {
@@ -38,7 +34,7 @@ export async function analyzeBatch(items, options = {}) {
   return results;
 }
 
-/** Legacy Senza helpers */
+
 export function suggestFromFilename(filePath, context) {
   const r = analyzeRules({ filePath, tags: {}, context });
   return {

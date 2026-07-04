@@ -1,5 +1,3 @@
-/** Parse Senza library layout: music/Artist/Album/track.ext */
-
 function decodeSeg(s) {
   try {
     return decodeURIComponent(String(s || '').replace(/\+/g, ' '));

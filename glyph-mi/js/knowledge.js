@@ -1,5 +1,3 @@
-/** Apply public knowledge packs to merged tag fields. */
-
 function norm(s) {
   return String(s ?? '').trim().toLowerCase();
 }
@@ -77,7 +75,7 @@ export function applyKnowledge(filePath, tags, fields, reasons, packs = []) {
             rs.push('knowledge: title cleanup');
           }
         } catch {
-          /* bad pattern */
+          
         }
       }
     }

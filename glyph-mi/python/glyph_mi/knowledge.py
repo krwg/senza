@@ -73,7 +73,6 @@ def apply_knowledge(file_path: str, tags: dict, merged_fields: dict, reasons: li
     rel_hint = _norm(file_path.replace("\\", "/"))
 
     for pack in packs:
-        # Pack-level genre / artist aliases
         for alias in pack.get("artistAliases") or []:
             if _norm(alias.get("match")) in _norm(tags.get("artist") or "") or _norm(alias.get("match")) in base:
                 if alias.get("artist"):
@@ -87,7 +86,6 @@ def apply_knowledge(file_path: str, tags: dict, merged_fields: dict, reasons: li
                     merged_fields["genre"] = hint["genre"]
                     reasons.append(f"knowledge: genre hint ({pack.get('_source_file', 'pack')})")
 
-        # Curated examples from knowledge-pack format
         for ex in pack.get("examples") or []:
             ref = ex.get("ref") or {}
             ref_base = _norm(ref.get("basename") or "")

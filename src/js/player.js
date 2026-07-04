@@ -5,7 +5,7 @@ export function createPlayer(audioEl, onUpdate, fileUrlFn, opts = {}) {
   let queue = [];
   let index = 0;
   let onTimeUpdate = null;
-  let repeatMode = 'off'; // off | all | one
+  let repeatMode = 'off'; 
   let shuffleOn = false;
   let shuffleOrder = [];
 
@@ -128,7 +128,7 @@ export function createPlayer(audioEl, onUpdate, fileUrlFn, opts = {}) {
         await audioEl.play().catch(() => {});
       }
     } catch {
-      /* ignore */
+      
     }
 
     if (gen !== loadGen) return;

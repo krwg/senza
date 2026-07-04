@@ -28,7 +28,7 @@ function trackInput(tr, allTracks) {
   };
 }
 
-/** Library scan for Music Vault — runs in Senza, no Python required. */
+
 export async function scanVaultLibrary(tracks, state, { maxFixPreview = 12, api = null } = {}) {
   const total = tracks.length;
   if (!total) {
@@ -103,7 +103,7 @@ export async function scanVaultLibrary(tracks, state, { maxFixPreview = 12, api 
         }
       }
     } catch {
-      /* skip track */
+      
     }
   }
 

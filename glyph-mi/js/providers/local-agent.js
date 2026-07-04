@@ -1,8 +1,3 @@
-/**
- * Optional local LLM provider (Ollama-compatible).
- * Fails silently → caller falls back to glyph-rules.
- */
-
 const DEFAULT_URL = 'http://127.0.0.1:11434';
 const DEFAULT_MODEL = 'llama3.2';
 

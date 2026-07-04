@@ -1,7 +1,7 @@
 node_modules/
 dist/
 release/
-# Glyph Lab + private knowledge (public Glyph MI → github.com/FlokeStudio/Glyph-MI)
+# Glyph Lab + private knowledge (public glyph-mi → github.com/krwg/glyph-mi)
 glyph-lab/
 glyph-mi/knowledge/private/
 **/__pycache__/

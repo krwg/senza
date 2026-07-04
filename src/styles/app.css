@@ -638,7 +638,7 @@ html, body {
 
 .btn:hover { filter: brightness(1.05); }
 
-/* Themed scrollbars */
+
 .content,
 .queue-list,
 .tag-editor-body,
@@ -687,7 +687,7 @@ html, body {
   background: var(--floke-accent);
 }
 
-/* Range sliders — accent, not system blue */
+
 .range-input {
   -webkit-appearance: none;
   appearance: none;
@@ -1764,7 +1764,7 @@ html, body {
   margin-top: 8px;
 }
 
-/* Settings shell (BLIP-style nav + panels) */
+
 .settings-shell {
   display: flex;
   height: 100%;
@@ -2405,7 +2405,7 @@ input.hidden {
   font-size: 13px;
 }
 
-/* Album Focus */
+
 .album-back {
   display: inline-flex;
   align-items: center;
@@ -2459,7 +2459,7 @@ input.hidden {
   margin-top: 8px;
 }
 
-/* Artist pages */
+
 .grid-cards--artists .card-art--artist {
   border-radius: 50%;
   aspect-ratio: 1;
@@ -2593,7 +2593,7 @@ input.hidden {
   }
 }
 
-/* Journal */
+
 .journal-stats {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -2736,7 +2736,7 @@ input.hidden {
   white-space: nowrap;
 }
 
-/* Playlist picker */
+
 .playlist-picker {
   position: fixed;
   inset: 0;
@@ -2862,7 +2862,7 @@ input.hidden {
   color: var(--text-muted);
 }
 
-/* Now Playing panel + fullscreen player — aligned to main column (not under sidebar) */
+
 .now-playing-overlay {
   position: fixed;
   top: var(--chrome-h);

@@ -15,7 +15,7 @@
 
 *Not streaming. Not subscriptions. Not algorithms.*
 
-Part of the **[Floke](https://github.com/FlokeStudio/)** ecosystem.
+Part of the **[Floke](https://github.com/krwg/)** ecosystem.
 
 </div>
 
@@ -87,7 +87,7 @@ Think of it as **your shelf, digitized**: one calm place to import, organize, fi
 | | |
 |---|---|
 | **What** | Offline music library + player (Electron) |
-| **Release** | **1.1.0 — Legato** ([`CHANGELOG.md`](CHANGELOG.md) · [Releases](https://github.com/FlokeStudio/Senza/releases)) |
+| **Release** | **1.1.0 — Legato** ([`CHANGELOG.md`](CHANGELOG.md) · [Releases](https://github.com/krwg/senza/releases)) |
 | **Codename** | **Legato** — smooth, connected listening |
 | **Account** | None |
 | **Network** | Not required for playback |
@@ -166,7 +166,7 @@ Details: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 **Requirements:** Node.js **20+**, Windows **10/11** for `.exe` builds.
 
 ```bash
-git clone https://github.com/FlokeStudio/Senza.git
+git clone https://github.com/krwg/senza.git
 cd Senza
 npm install
 npm run electron:dev:watch
@@ -237,7 +237,7 @@ Senza/
 
 <h3 id="en-license">License</h3>
 
-**[GNU GPL v3](LICENSE)** — by Floke Studio.
+**[GNU GPL v3](LICENSE)** — by krwg.
 
 ---
 
@@ -300,7 +300,7 @@ Senza/
 <h3 id="ru-quick-start">Быстрый старт</h3>
 
 ```bash
-git clone https://github.com/FlokeStudio/Senza.git
+git clone https://github.com/krwg/senza.git
 cd Senza
 npm install
 npm run electron:dev:watch
@@ -336,7 +336,7 @@ npm run electron:dev:watch
 
 <h3 id="ru-license">Лицензия</h3>
 
-**[GNU GPL v3](LICENSE)** — Floke Studio.
+**[GNU GPL v3](LICENSE)** — krwg.
 
 ---
 
@@ -346,6 +346,6 @@ npm run electron:dev:watch
 
 [English](#english) · [Русский](#russian)
 
-[Releases](https://github.com/FlokeStudio/Senza/releases) · [Floke](https://github.com/FlokeStudio/) · [Issues](https://github.com/FlokeStudio/Senza/issues)
+[Releases](https://github.com/krwg/senza/releases) · [Floke](https://github.com/krwg/) · [Issues](https://github.com/krwg/senza/issues)
 
 </div>

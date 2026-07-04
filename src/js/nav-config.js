@@ -1,5 +1,3 @@
-/** Sidebar navigation catalog + user customization (visibility & order). */
-
 export const NAV_CATALOG = [
   { id: 'flow', key: 'nav.flow', icon: 'flow', zone: 'main' },
   { id: 'recent', key: 'nav.recent', icon: 'recent', zone: 'main' },

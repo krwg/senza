@@ -1,6 +1,6 @@
 import { splitArtists, joinArtists } from '../utils/artists.js';
 
-/** Infer album / artist from sibling tracks in the same import batch. */
+
 export function consensusFromSiblings(siblings = []) {
   if (!siblings.length) return null;
 
@@ -44,7 +44,7 @@ function topEntry(map) {
 
 import { parseLibraryPath } from './library-path.js';
 
-/** Music/Artist/Album from library folder path. */
+
 export function hintFromPath(filePath) {
   const parsed = parseLibraryPath(filePath);
   if (!parsed) return null;

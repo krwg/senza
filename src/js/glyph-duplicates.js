@@ -31,7 +31,7 @@ function trackQualityScore(tr) {
   if (tr.genre) s += 1;
   if (tr.year) s += 1;
   const path = String(tr.path || '');
-  if (path.includes('/music/') || path.includes('\\music\\')) s += 1;
+  if (path.includes('/music/') || path.includes('\\usic\\)) s += 1;
   return s;
 }
 
@@ -43,10 +43,6 @@ function groupKey(ids) {
   return [...ids].sort().join('\0');
 }
 
-/**
- * Find duplicate track groups in the library.
- * @returns {{ groups: Array<{ id: string, reason: string, reasonKey: string, tracks: object[], keepId: string, removeIds: string[] }>, duplicateTrackCount: number, groupCount: number }}
- */
 export function findDuplicateGroups(tracks) {
   const byTag = new Map();
   const byName = new Map();
@@ -100,7 +96,6 @@ export function findDuplicateGroups(tracks) {
   return { groups, duplicateTrackCount, groupCount: groups.length };
 }
 
-/** Merge spectral (fingerprint) groups without duplicating metadata groups. */
 export function mergeDuplicateGroups(metaResult, spectralGroups = []) {
   const groups = [...(metaResult.groups || [])];
   const seen = new Set(groups.flatMap((g) => g.tracks.map((t) => t.id)));

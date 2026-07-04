@@ -1,5 +1,3 @@
-/** Chromaprint fingerprint similarity — no API key, local duplicate detection. */
-
 export function fingerprintSimilarity(a, b) {
   const aa = String(a || '')
     .split(',')
@@ -22,10 +20,7 @@ function durationBucket(d) {
   return Math.round(Number(d) / 3) * 3;
 }
 
-/**
- * Group tracks by similar chromaprint fingerprint (same audio, different tags/names).
- * @param {Map<string, { duration: number, fingerprint: string }>} fpByTrackId
- */
+
 export function findSpectralDuplicateGroups(tracks, fpByTrackId, { minSimilarity = 0.82 } = {}) {
   const buckets = new Map();
   for (const tr of tracks) {
@@ -76,9 +71,7 @@ export function findSpectralDuplicateGroups(tracks, fpByTrackId, { minSimilarity
   return groups;
 }
 
-/**
- * Fetch fingerprints for tracks (batched, with limit).
- */
+
 export async function loadFingerprintsForTracks(tracks, api, { limit = 120 } = {}) {
   const map = new Map();
   if (!api?.glyphFingerprint) return map;
@@ -91,7 +84,7 @@ export async function loadFingerprintsForTracks(tracks, api, { limit = 120 } = {
         map.set(tr.id, { duration: fp.duration || tr.duration, fingerprint: fp.fingerprint });
       }
     } catch {
-      /* skip */
+      
     }
   }
   return map;

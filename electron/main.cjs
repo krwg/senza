@@ -195,7 +195,7 @@ async function importPaths(paths) {
     try {
       glyphFeatures = await extractGlyphFeatures(libraryPath, meta);
     } catch {
-      /* optional */
+      
     }
 
     const track = {

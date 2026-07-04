@@ -9,7 +9,7 @@ description = "Glyph Metadata Intelligence — local music tag agent for Floke a
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "GPL-3.0-or-later" }
-authors = [{ name = "Floke Studio" }]
+authors = [{ name = "krwg" }]
 dependencies = []
 
 [project.scripts]

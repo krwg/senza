@@ -9,7 +9,7 @@ export function renderPublish() {
         <li><input type="checkbox" id="c2"> <label for="c2">Нет абсолютных путей (только rel под music/)</label></li>
         <li><input type="checkbox" id="c3"> <label for="c3">Проверено ≥10 примеров вручную</label></li>
         <li><input type="checkbox" id="c4"> <label for="c4">Файл лежит в <code>knowledge/public/</code></label></li>
-        <li><input type="checkbox" id="c5"> <label for="c5">Commit + push в github.com/FlokeStudio/Glyph-MI</label></li>
+        <li><input type="checkbox" id="c5"> <label for="c5">Commit + push в github.com/krwg/glyph-mi</label></li>
       </ul>
     </div>
     <div class="panel">

@@ -64,7 +64,7 @@ First major release: **Glyph2.1-O** metadata intelligence, **Flow** home experie
 - **Learning** — `learn.jsonl` legacy path, contributor ID, export to private knowledge pack, import Senza export → pack.
 - **Analytics** in settings — indexed tracks, average score, counter-examples, Ollama stats, DB size.
 - **Master toggle** — disable Glyph2.1-O for plain tag editor, no Flow GLYPH branding, no vault Glyph scan.
-- **Knowledge packs** — built-in `core-v1`, `heuristics-v1`, user-learned pack from library; sync with [Glyph-MI](https://github.com/FlokeStudio/Glyph-MI).
+- **Knowledge packs** — built-in `core-v1`, `heuristics-v1`, user-learned pack from library; sync with [glyph-mi](https://github.com/krwg/glyph-mi).
 
 #### Flow (home)
 - **Personal wave** — ~32 tracks, no repeats per session; modes: Balanced, Favorites, Rarely played, Discover.
@@ -130,6 +130,6 @@ First major release: **Glyph2.1-O** metadata intelligence, **Flow** home experie
 
 ---
 
-[1.1.0]: https://github.com/FlokeStudio/Senza/releases/tag/v1.1.0
-[1.0.0]: https://github.com/FlokeStudio/Senza/releases/tag/v1.0.0
-[0.1.0]: https://github.com/FlokeStudio/Senza/releases/tag/v0.1.0
+[1.1.0]: https://github.com/krwg/senza/releases/tag/v1.1.0
+[1.0.0]: https://github.com/krwg/senza/releases/tag/v1.0.0
+[0.1.0]: https://github.com/krwg/senza/releases/tag/v0.1.0

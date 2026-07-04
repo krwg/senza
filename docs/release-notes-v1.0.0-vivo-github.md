@@ -17,7 +17,7 @@ Codename **Vivo** marks the first major release: built-in **Glyph2.1-O** metadat
 Windows x64 installer and portable build from **Assets** below (built with `npm run electron:build`).
 
 ```bash
-git clone https://github.com/FlokeStudio/Senza.git
+git clone https://github.com/krwg/senza.git
 cd Senza
 npm install
 npm run electron:dev:watch
@@ -29,8 +29,8 @@ See [CHANGELOG.md](../CHANGELOG.md) and [README.md](../README.md) for the comple
 
 ## Glyph docs
 
-[Glyph-MI/GUIDE.ru.md](https://github.com/FlokeStudio/Glyph-MI/blob/main/GUIDE.ru.md) — single source for Glyph2.1-O pipeline, packs, logging, and Lab workflow.
+[GUIDE.ru.md](https://github.com/krwg/glyph-mi/blob/main/GUIDE.ru.md) — single source for Glyph2.1-O pipeline, packs, logging, and Lab workflow.
 
 ---
 
-**License:** GPL-3.0 · **Floke Studio**
+**License:** GPL-3.0 · **krwg**

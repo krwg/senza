@@ -66,7 +66,7 @@ function runProcess(exe, args, stdinJson) {
         return;
       }
       try {
-        const line = stdout.trim().split('\n').pop();
+        const line = stdout.trim().split('\n).pop();
         resolve(JSON.parse(line));
       } catch (e) {
         reject(new Error(`Invalid Glyph MI response: ${stdout.slice(0, 200)}`));
@@ -99,7 +99,7 @@ async function invokeGlyph(req) {
       cachedPython = exe;
       return out;
     } catch {
-      /* try next */
+      void 0;
     }
   }
 

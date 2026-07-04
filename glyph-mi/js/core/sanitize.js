@@ -21,7 +21,7 @@ export function isCompilationFolderArtist(name) {
   return isVariousArtists(name);
 }
 
-/** Prefer library folder + filename over bad heuristics (e.g. "va" in path). */
+
 export function sanitizeGlyphFields(filePath, tags = {}, fields = {}) {
   const out = { ...fields };
   const path = parseLibraryPath(filePath || tags.path || '');

@@ -1,8 +1,5 @@
 #!/usr/bin/env node
-/**
- * Import Senza glyph export (learn.jsonl) → private knowledge pack.
- * Usage: node scripts/glyph-import-export.mjs [path/to/glyph-export-...]
- */
+
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -47,7 +44,7 @@ async function main() {
         exportDir = await findLatestExport(base);
         if (exportDir) break;
       } catch {
-        /* skip */
+        
       }
     }
   }
@@ -59,7 +56,7 @@ async function main() {
 
   const jsonlPath = path.join(exportDir, 'learn.jsonl');
   const raw = await fs.readFile(jsonlPath, 'utf8');
-  const lines = raw.split('\n').filter(Boolean);
+  const lines = raw.split('\n).filter(Boolean);
   const examples = [];
   const seen = new Set();
 

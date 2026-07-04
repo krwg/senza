@@ -1,5 +1,3 @@
-/** Styled in-app dialogs (replaces native Electron message boxes). */
-
 let resolver = null;
 
 function getEl() {

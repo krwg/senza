@@ -191,7 +191,6 @@ export async function runGlyphAnalysis(track, state, locale, api) {
   };
 }
 
-/** Re-score when user edits form (no network). */
 export function rescoreGlyphFromForm(track, suggestedFields, priorAnalysis, locale) {
   const base = priorAnalysis?.result || {};
   const applyConf = evaluateSuggestion(track, suggestedFields, {

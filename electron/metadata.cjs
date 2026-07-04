@@ -1,4 +1,3 @@
-/** Lazy loader for music-metadata v10+ (CommonJS entry only exports loadMusicMetadata). */
 let parseFileFn = null;
 
 async function getParseFile() {

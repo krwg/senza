@@ -1,8 +1,3 @@
-/**
- * Glyph event log — schema helpers & diff (Glyph 2.0).
- * SQLite writes happen in Electron (glyph-log-db.cjs); this module is portable.
- */
-
 export const GLYPH_EVENTS = {
   SUGGEST: 'glyph.suggest',
   APPLY: 'glyph.apply',
@@ -86,9 +81,7 @@ export function buildDiffRows(inputTags, suggestionFields, outcomeFields, accept
   return rows;
 }
 
-/**
- * Normalize renderer/main payload → row for glyph_log + glyph_diff.
- */
+
 export function normalizeLogPayload({
   project = 'senza',
   agent = 'music',

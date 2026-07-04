@@ -789,7 +789,7 @@ export function renderSettingsView(locale, settings, libraryRoot, activeSection 
           </div>
           <div class="settings-about-meta-row">
             <span data-i18n="about.made">${t('about.made', locale)}</span>
-            <span>Floke Studio</span>
+            <span>krwg</span>
           </div>
         </div>
         <a class="btn btn-primary settings-about-btn" href="${esc(RELEASE.repository)}" target="_blank" rel="noopener noreferrer" data-i18n="about.github">${t('about.github', locale)}</a>

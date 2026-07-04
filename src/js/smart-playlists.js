@@ -1,5 +1,3 @@
-/** Smart playlist rule evaluation (local, no cloud). */
-
 const RULE_TYPES = ['genre', 'year', 'unplayedDays', 'favorite', 'recent'];
 
 export { RULE_TYPES };
@@ -19,10 +17,7 @@ function lastPlayedDays(trackId, playHistory) {
   return latest ? daysSince(latest) : Infinity;
 }
 
-/**
- * @param {object} rule { type, value }
- * @param {object} ctx { playHistory, favorites, now }
- */
+
 function trackMatchesRule(tr, rule, ctx) {
   const type = rule?.type;
   const val = rule?.value;
@@ -46,9 +41,7 @@ function trackMatchesRule(tr, rule, ctx) {
   return false;
 }
 
-/**
- * Smart playlist: all rules must match (AND).
- */
+
 export function evaluateSmartPlaylist(allTracks, playlist, ctx) {
   const rules = playlist?.rules || [];
   if (!rules.length) return [];

@@ -1,4 +1,3 @@
-/** Normalize tags before library copy — avoids music/Unknown Artist/Unknown Album/. */
 const path = require('path');
 
 const UNKNOWN_ARTIST = 'Unknown Artist';
@@ -37,10 +36,7 @@ function isUnknownAlbum(a) {
   return !n || n === 'unknown album' || n === 'unknown';
 }
 
-/**
- * @param {string} filePath
- * @param {object} meta — title, artist, album, ...
- */
+
 function normalizeImportMeta(filePath, meta) {
   const out = { ...meta };
   const ext = path.extname(filePath);
@@ -59,7 +55,7 @@ function normalizeImportMeta(filePath, meta) {
   if (isUnknownAlbum(out.album) && out.title) {
     const parsed = parseArtistTitle(out.title);
     if (parsed && !isUnknownArtist(parsed.artist)) {
-      /* album stays unknown until glyph or folder */
+      
     }
   }
 

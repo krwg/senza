@@ -1,4 +1,3 @@
-/** Shared DB accessor for learn-rules (avoids circular deps). */
 const { getDb: getLogDb } = require('./glyph-log-db.cjs');
 
 function getDb(libraryRoot) {

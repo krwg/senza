@@ -13,7 +13,7 @@ function metadataQuality(tr) {
   if (tr.year) q += 3;
   if (tr.hasCover) q += 8;
   const path = String(tr.path || '');
-  if (/\/music\//i.test(path) || /\\music\\/i.test(path)) q += 5;
+  if (/\/music\
   return q;
 }
 
@@ -83,10 +83,7 @@ function pickWeighted(pool, n) {
   return out;
 }
 
-/**
- * Build a Flow wave (no repeats within session).
- * @returns {{ tracks: object[], mode: string }}
- */
+
 export function buildFlowWave(allTracks, playHistory, {
   mode = 'blend',
   sessionPlayed = new Set(),
