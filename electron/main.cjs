@@ -11,7 +11,7 @@ const crypto = require('crypto');
 const fs = require('fs/promises');
 const { readTags, writeTags } = require('./tags.cjs');
 const { resolveLibraryAudioPath } = require('./import.cjs');
-const { validateSaveState } = require('./state-validator.cjs');
+const { validateSaveState, validateTrack, isUnderDir } = require('./state-validator.cjs');
 const { normalizeImportMeta } = require('./glyph-import-meta.cjs');
 const { extractGlyphFeatures } = require('./glyph-features.cjs');
 const { saveCoverFile, coverExists, extractAndStoreCover, getCoverPath } = require('./covers.cjs');
@@ -91,25 +91,54 @@ async function ensureLibrary() {
   return root;
 }
 
+function defaultState() {
+  return {
+    tracks: [],
+    queue: [],
+    queueIndex: 0,
+    playlists: [],
+    playHistory: [],
+    settings: { theme: 'dark', locale: 'en', collectionMode: false, volume: 0.85, clickLock: false },
+    profile: { displayName: 'senza-listener', avatarSeed: 'senza', useCustomAvatar: false },
+  };
+}
+
+function sanitizeLoadedState(parsed, libraryRoot) {
+  const result = validateSaveState(parsed, libraryRoot);
+  if (result.ok) return result.state;
+
+  // Soft-recover stored state: drop tracks whose paths escape the library.
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed) || !Array.isArray(parsed.tracks)) {
+    console.error('[senza] stored state invalid:', result.reason);
+    return null;
+  }
+  const kept = [];
+  for (let i = 0; i < parsed.tracks.length; i += 1) {
+    const trackResult = validateTrack(parsed.tracks[i], libraryRoot, i);
+    if (trackResult.ok) kept.push(trackResult.track);
+    else console.error('[senza] dropping stored track:', trackResult.reason);
+  }
+  const retry = validateSaveState({ ...parsed, tracks: kept }, libraryRoot);
+  if (!retry.ok) {
+    console.error('[senza] stored state unrecoverable:', retry.reason);
+    return null;
+  }
+  return retry.state;
+}
+
 async function loadState() {
   try {
     const raw = await fs.readFile(getStatePath(), 'utf8');
-    const state = JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    const sanitized = sanitizeLoadedState(parsed, getLibraryRoot());
+    const state = sanitized || defaultState();
     if (!state.settings) state.settings = { theme: 'dark', locale: 'en', collectionMode: false, volume: 0.85, clickLock: false };
     if (!state.profile) state.profile = { displayName: 'senza-listener', avatarSeed: 'senza', useCustomAvatar: false };
     if (!state.playlists) state.playlists = [];
     if (state.queueIndex === undefined) state.queueIndex = 0;
     return state;
   } catch {
-    return {
-      tracks: [],
-      queue: [],
-      queueIndex: 0,
-      playlists: [],
-      playHistory: [],
-      settings: { theme: 'dark', locale: 'en', collectionMode: false, volume: 0.85, clickLock: false },
-      profile: { displayName: 'senza-listener', avatarSeed: 'senza', useCustomAvatar: false },
-    };
+    return defaultState();
   }
 }
 
@@ -468,8 +497,23 @@ app.whenReady().then(async () => {
     const track = state.tracks.find((t) => t.id === trackId);
     if (!track) throw new Error('Track not found');
 
+    const trackPath = path.resolve(track.path);
+    if (!isUnderDir(trackPath, libraryRoot)) {
+      throw new Error('Track path escapes library root');
+    }
+    track.path = trackPath;
+
     const writePayload = { ...tags };
-    const writable = canWriteTags(track.path);
+    delete writePayload.path;
+    delete writePayload.sourcePath;
+    if (writePayload.coverPath) {
+      const coverPath = path.resolve(writePayload.coverPath);
+      if (!isUnderDir(coverPath, libraryRoot)) {
+        throw new Error('Cover path escapes library root');
+      }
+      writePayload.coverPath = coverPath;
+    }
+    const writable = canWriteTags(trackPath);
 
     if (tags.coverBuffer?.length) {
       const buf = Buffer.from(tags.coverBuffer);
@@ -480,7 +524,7 @@ app.whenReady().then(async () => {
 
     let updated;
     if (writable) {
-      updated = await writeTags(track.path, writePayload);
+      updated = await writeTags(trackPath, writePayload);
     } else {
       updated = {
         title: tags.title ?? track.title,
@@ -675,8 +719,13 @@ app.whenReady().then(async () => {
       await fs.unlink(coverPath).catch(() => {});
     }
 
-    if (deleteFile && track.path && existsSync(track.path)) {
-      await fs.unlink(track.path).catch(() => {});
+    if (deleteFile && track.path) {
+      const candidate = path.resolve(track.path);
+      if (!isUnderDir(candidate, root)) {
+        console.error('[senza] refuse to delete path outside library:', track.path);
+      } else if (existsSync(candidate)) {
+        await fs.unlink(candidate).catch(() => {});
+      }
     }
 
     await saveState(state);

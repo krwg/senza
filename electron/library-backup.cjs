@@ -74,9 +74,7 @@ async function importLibrary(userDataPath, zipPath, { merge = false } = {}) {
   if (existsSync(stateSrc)) {
     const raw = await fs.readFile(stateSrc, 'utf8');
     importedState = JSON.parse(raw);
-    if (!merge) {
-      await fs.writeFile(path.join(userDataPath, 'senza-state.json'), raw, 'utf8');
-    }
+    // Persist via saveState after path/schema validation.
   }
 
   await fs.rm(tmpDir, { recursive: true, force: true }).catch(() => {});
