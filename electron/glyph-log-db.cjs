@@ -1,3 +1,6 @@
+/**
+ * Glyph SQLite log (library/glyph/glyph-log.sqlite).
+ */
 const path = require('path');
 const fs = require('fs');
 const { glyphDir, ensureGlyphDirs } = require('./glyph-learn.cjs');
@@ -120,7 +123,7 @@ function migrateTracksJsonToSqlite(db, libraryRoot) {
     tx(rows);
     fs.renameSync(jsonPath, `${jsonPath}.migrated`);
   } catch {
-    
+    /* keep json if migration fails */
   }
 }
 
@@ -364,7 +367,7 @@ async function writeDatasetExport(libraryRoot, { onlyAccepted = true } = {}) {
   fs.mkdirSync(outDir, { recursive: true });
   const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
   const outPath = path.join(outDir, `glyph-dataset-${stamp}.jsonl`);
-  fs.writeFileSync(outPath, lines.join('\n) + (lines.length ? '\n' : ''), 'utf8');
+  fs.writeFileSync(outPath, lines.join('\n') + (lines.length ? '\n' : ''), 'utf8');
   return { path: outPath, count };
 }
 
@@ -382,7 +385,7 @@ function closeAll() {
     try {
       db.close();
     } catch {
-      void 0;
+      /* */
     }
   }
   dbs.clear();
