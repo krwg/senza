@@ -9,7 +9,7 @@ function esc(s) {
 }
 
 function basename(path) {
-  return String(path || '').split(/[/\\/).pop() || '—';
+  return String(path || '').split(/[/\\]/).pop() || '—';
 }
 
 function renderDuplicateGroups(scan, locale) {

@@ -11,6 +11,7 @@ const crypto = require('crypto');
 const fs = require('fs/promises');
 const { readTags, writeTags } = require('./tags.cjs');
 const { resolveLibraryAudioPath } = require('./import.cjs');
+const { validateSaveState } = require('./state-validator.cjs');
 const { normalizeImportMeta } = require('./glyph-import-meta.cjs');
 const { extractGlyphFeatures } = require('./glyph-features.cjs');
 const { saveCoverFile, coverExists, extractAndStoreCover, getCoverPath } = require('./covers.cjs');
@@ -113,7 +114,13 @@ async function loadState() {
 }
 
 async function saveState(state) {
-  await fs.writeFile(getStatePath(), JSON.stringify(state, null, 2), 'utf8');
+  const libraryRoot = getLibraryRoot();
+  const result = validateSaveState(state, libraryRoot);
+  if (!result.ok) {
+    console.error('[senza] save-state rejected:', result.reason);
+    throw new Error(`Invalid save-state: ${result.reason}`);
+  }
+  await fs.writeFile(getStatePath(), JSON.stringify(result.state, null, 2), 'utf8');
 }
 
 async function scanAudioFiles(dir) {

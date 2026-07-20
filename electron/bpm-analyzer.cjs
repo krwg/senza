@@ -1,3 +1,4 @@
+/** BPM detection at import — librosa (Python) when available, else music-tempo + audio-decode. */
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
@@ -55,7 +56,7 @@ function runLibrosaBpm(filePath) {
         resolve(null);
         return;
       }
-      const line = out.trim().split('\n).pop();
+      const line = out.trim().split('\n').pop();
       const bpm = Number(line);
       if (Number.isFinite(bpm) && bpm >= 40 && bpm <= 240) {
         resolve({ bpm: Math.round(bpm), source: 'librosa' });
@@ -86,11 +87,15 @@ async function runJsBpm(filePath) {
       return { bpm: Math.round(bpm), source: 'music-tempo' };
     }
   } catch {
-    void 0;
+    /* optional */
   }
   return null;
 }
 
+/**
+ * @param {string} filePath
+ * @param {{ existingBpm?: number|null }} opts
+ */
 async function detectBpm(filePath, opts = {}) {
   if (opts.existingBpm && opts.existingBpm >= 40 && opts.existingBpm <= 240) {
     return { bpm: Math.round(opts.existingBpm), source: 'tags' };
