@@ -1068,8 +1068,7 @@ function bindProfileSettings() {
   });
   document.getElementById('profileUploadAvatar')?.addEventListener('click', async () => {
     const picked = await api.pickCover();
-    if (!picked?.coverPath) return;
-    const bytes = await api.readFileBinary(picked.coverPath);
+    const bytes = picked?.buffer;
     if (!bytes?.length) return;
     openCoverCropModal(new Blob([new Uint8Array(bytes)]), locale, async ({ buffer }) => {
       pendingProfileAvatar = { buffer };
@@ -1189,16 +1188,14 @@ async function bindArtistAvatars() {
 
 async function pickArtistPhoto(slug) {
   const picked = await api.pickCover();
-  if (picked?.coverPath) {
-    const bytes = await api.readFileBinary(picked.coverPath);
-    if (bytes?.length) {
-      openCoverCropModal(new Blob([new Uint8Array(bytes)]), locale, async ({ buffer }) => {
-        await api.artistAvatarSave({ slug, buffer: Array.from(new Uint8Array(buffer)) });
-        await bindArtistAvatars();
-        showToast(locale === 'ru' ? 'Фото исполнителя сохранено' : 'Artist photo saved', 'success');
-      });
-      return;
-    }
+  const bytes = picked?.buffer;
+  if (bytes?.length) {
+    openCoverCropModal(new Blob([new Uint8Array(bytes)]), locale, async ({ buffer }) => {
+      await api.artistAvatarSave({ slug, buffer: Array.from(new Uint8Array(buffer)) });
+      await bindArtistAvatars();
+      showToast(locale === 'ru' ? 'Фото исполнителя сохранено' : 'Artist photo saved', 'success');
+    });
+    return;
   }
   const input = document.createElement('input');
   input.type = 'file';
@@ -2098,12 +2095,10 @@ document.getElementById('tagGlyphRun')?.addEventListener('click', () => {
 
 async function openCoverPickerForTags() {
   const picked = await api.pickCover();
-  if (picked?.coverPath) {
-    const bytes = await api.readFileBinary(picked.coverPath);
-    if (bytes?.length) {
-      openCoverCropModal(new Blob([new Uint8Array(bytes)]), locale, onCoverCropped);
-      return;
-    }
+  const bytes = picked?.buffer;
+  if (bytes?.length) {
+    openCoverCropModal(new Blob([new Uint8Array(bytes)]), locale, onCoverCropped);
+    return;
   }
   document.getElementById('coverFileInput')?.click();
 }

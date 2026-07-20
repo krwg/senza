@@ -60,4 +60,4 @@ async function resolveLibraryAudioPath(libraryRoot, sourcePath, meta) {
   return destPath;
 }
 
-module.exports = { resolveLibraryAudioPath, sanitizeSegment };
+module.exports = { resolveLibraryAudioPath, sanitizeSegment, isUnderDir };

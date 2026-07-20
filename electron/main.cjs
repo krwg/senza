@@ -11,6 +11,7 @@ const crypto = require('crypto');
 const fs = require('fs/promises');
 const { readTags, writeTags } = require('./tags.cjs');
 const { resolveLibraryAudioPath } = require('./import.cjs');
+const { resolveUnderLibraryRoot } = require('./lib/path-guards.cjs');
 const { normalizeImportMeta } = require('./glyph-import-meta.cjs');
 const { extractGlyphFeatures } = require('./glyph-features.cjs');
 const { saveCoverFile, coverExists, extractAndStoreCover, getCoverPath } = require('./covers.cjs');
@@ -360,8 +361,9 @@ app.whenReady().then(async () => {
     const libraryRoot = getLibraryRoot();
     const state = await loadState();
     const settings = state.settings || {};
+    const filePath = resolveUnderLibraryRoot(libraryRoot, payload?.filePath);
     return acoustidLookup(libraryRoot, {
-      filePath: payload?.filePath,
+      filePath,
       duration: payload?.duration,
       apiKey: payload?.apiKey || settings.acoustidApiKey || process.env.ACOUSTID_API_KEY,
     });
@@ -371,7 +373,8 @@ app.whenReady().then(async () => {
 
   ipcMain.handle('senza:glyph-fingerprint', async (_, payload) => {
     const libraryRoot = getLibraryRoot();
-    return fingerprintFile(libraryRoot, { filePath: payload?.filePath });
+    const filePath = resolveUnderLibraryRoot(libraryRoot, payload?.filePath);
+    return fingerprintFile(libraryRoot, { filePath });
   });
 
   ipcMain.handle('senza:glyph-download-tools', async () => downloadChromaprintTools());
@@ -429,10 +432,16 @@ app.whenReady().then(async () => {
   ipcMain.handle('senza:import-paths', (_, paths) => importPaths(paths));
 
   ipcMain.handle('senza:open-path', (_, filePath) => {
-    shell.showItemInFolder(filePath);
+    const libraryRoot = getLibraryRoot();
+    const safePath = resolveUnderLibraryRoot(libraryRoot, filePath);
+    shell.showItemInFolder(safePath);
   });
 
-  ipcMain.handle('senza:file-url', (_, filePath) => pathToFileURL(filePath).href);
+  ipcMain.handle('senza:file-url', (_, filePath) => {
+    const libraryRoot = getLibraryRoot();
+    const safePath = resolveUnderLibraryRoot(libraryRoot, filePath);
+    return pathToFileURL(safePath).href;
+  });
 
   ipcMain.handle('senza:window-minimize', () => mainWindow?.minimize());
   ipcMain.handle('senza:window-toggle-maximize', () => {
@@ -446,7 +455,11 @@ app.whenReady().then(async () => {
   });
   ipcMain.handle('senza:window-close', () => mainWindow?.close());
 
-  ipcMain.handle('senza:read-tags', (_, filePath) => readTags(filePath));
+  ipcMain.handle('senza:read-tags', (_, filePath) => {
+    const libraryRoot = getLibraryRoot();
+    const safePath = resolveUnderLibraryRoot(libraryRoot, filePath);
+    return readTags(safePath);
+  });
 
   ipcMain.handle('senza:cover-url', async (_, trackId) => {
     const root = await ensureLibrary();
@@ -461,8 +474,17 @@ app.whenReady().then(async () => {
     const track = state.tracks.find((t) => t.id === trackId);
     if (!track) throw new Error('Track not found');
 
+    const trackPath = resolveUnderLibraryRoot(libraryRoot, track.path);
+    track.path = trackPath;
+
     const writePayload = { ...tags };
-    const writable = canWriteTags(track.path);
+    delete writePayload.path;
+    delete writePayload.sourcePath;
+    // Only allow coverPath when it already lives under the library root.
+    if (writePayload.coverPath) {
+      writePayload.coverPath = resolveUnderLibraryRoot(libraryRoot, writePayload.coverPath);
+    }
+    const writable = canWriteTags(trackPath);
 
     if (tags.coverBuffer?.length) {
       const buf = Buffer.from(tags.coverBuffer);
@@ -473,7 +495,7 @@ app.whenReady().then(async () => {
 
     let updated;
     if (writable) {
-      updated = await writeTags(track.path, writePayload);
+      updated = await writeTags(trackPath, writePayload);
     } else {
       updated = {
         title: tags.title ?? track.title,
@@ -546,17 +568,23 @@ app.whenReady().then(async () => {
   });
 
   ipcMain.handle('senza:lyrics-for-track', async (_, { filePath }) => {
-    return findLyricsForTrack(filePath);
+    const libraryRoot = getLibraryRoot();
+    const safePath = resolveUnderLibraryRoot(libraryRoot, filePath);
+    return findLyricsForTrack(safePath);
   });
 
   ipcMain.handle('senza:onnx-status', () => onnxStatus());
 
+  // Dialog-selected images may live outside the library; read bytes in main so
+  // renderer never needs an ungarded read-file-binary path.
   ipcMain.handle('senza:pick-cover', async () => {
     const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
       properties: ['openFile'],
+      filters: [{ name: 'Images', extensions: ['jpg', 'jpeg', 'png', 'webp', 'gif'] }],
     });
     if (canceled || !filePaths[0]) return null;
-    return { coverPath: filePaths[0] };
+    const buf = await fs.readFile(filePaths[0]);
+    return { buffer: Array.from(buf) };
   });
 
   ipcMain.handle('senza:library-tree', async () => {
@@ -587,8 +615,10 @@ app.whenReady().then(async () => {
   });
 
   ipcMain.handle('senza:read-file-binary', async (_, filePath) => {
-    if (!filePath || !existsSync(filePath)) return null;
-    const buf = await fs.readFile(filePath);
+    const libraryRoot = getLibraryRoot();
+    const safePath = resolveUnderLibraryRoot(libraryRoot, filePath);
+    if (!existsSync(safePath)) return null;
+    const buf = await fs.readFile(safePath);
     return Array.from(buf);
   });
 
@@ -668,8 +698,15 @@ app.whenReady().then(async () => {
       await fs.unlink(coverPath).catch(() => {});
     }
 
-    if (deleteFile && track.path && existsSync(track.path)) {
-      await fs.unlink(track.path).catch(() => {});
+    if (deleteFile && track.path) {
+      try {
+        const safePath = resolveUnderLibraryRoot(root, track.path);
+        if (existsSync(safePath)) {
+          await fs.unlink(safePath).catch(() => {});
+        }
+      } catch (err) {
+        console.error('[senza] refuse to delete path outside library:', track.path, err.message);
+      }
     }
 
     await saveState(state);
