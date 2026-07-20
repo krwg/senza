@@ -66,7 +66,7 @@ async function appendLearnEntry(libraryRoot, entry) {
       ts: new Date().toISOString(),
       v: 1,
       ...entry,
-    }) + '\n;
+    }) + '\n';
   await fs.appendFile(logPath(libraryRoot), line, 'utf8');
 }
 
@@ -81,7 +81,7 @@ async function readLearnEntries(libraryRoot, { limit = 5000 } = {}) {
     try {
       out.push(JSON.parse(line));
     } catch {
-      void 0;
+      /* skip corrupt */
     }
   }
   return out;

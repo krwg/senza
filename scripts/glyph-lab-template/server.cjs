@@ -68,7 +68,7 @@ const server = http.createServer(async (req, res) => {
     return res.end();
   }
 
-  const u = new URL(req.url, `http:
+  const u = new URL(req.url, `http://127.0.0.1:${PORT}`);
   const p = u.pathname;
 
   try {
@@ -87,7 +87,7 @@ const server = http.createServer(async (req, res) => {
       for (const f of imports) {
         if (f.type === 'file' && f.name === 'learn.jsonl') {
           const raw = await fs.readFile(safeDataPath(f.path), 'utf8');
-          learnLines += raw.split('\n).filter(Boolean).length;
+          learnLines += raw.split('\n').filter(Boolean).length;
         }
       }
       return send(res, 200, { ok: true, dataRoot: DATA_ROOT, counts, learnLines });
@@ -151,7 +151,7 @@ const server = http.createServer(async (req, res) => {
       const body = await readBody(req);
       const zone = body.zone === 'private' ? 'private' : 'packs';
       const name = String(body.name || 'pack')
-        .replace(/[^\w-]+/g, '-')
+        .replace(/[^\w.-]+/g, '-')
         .slice(0, 80);
       const rel = `${zone}/${name}.json`;
       const fp = safeDataPath(rel);
@@ -169,7 +169,7 @@ const server = http.createServer(async (req, res) => {
     if (p === '/api/open-data') {
       const cmd =
         process.platform === 'win32'
-          ? `explorer "${DATA_ROOT.replace(/\/g, '\\')}"`
+          ? `explorer "${DATA_ROOT.replace(/\//g, '\\')}"`
           : process.platform === 'darwin'
             ? `open "${DATA_ROOT}"`
             : `xdg-open "${DATA_ROOT}"`;

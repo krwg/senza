@@ -20,6 +20,7 @@
     "glyph:push-mirror": "node scripts/push-glyph-mirror.mjs",
     "glyph:import-export": "node scripts/glyph-import-export.mjs",
     "test": "vitest run",
+    "lint": "eslint src electron",
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {
@@ -94,6 +95,8 @@
     "cross-env": "^7.0.3",
     "electron": "^30.0.0",
     "electron-builder": "^24.13.3",
+    "eslint": "^9.39.5",
+    "globals": "^17.7.0",
     "sharp": "^0.33.5",
     "to-ico": "^1.1.5",
     "vite": "^5.4.21",
