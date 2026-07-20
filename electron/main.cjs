@@ -11,6 +11,7 @@ const crypto = require('crypto');
 const fs = require('fs/promises');
 const { readTags, writeTags } = require('./tags.cjs');
 const { resolveLibraryAudioPath } = require('./import.cjs');
+const { resolveUnderLibraryRoot } = require('./lib/path-guards.cjs');
 const { normalizeImportMeta } = require('./glyph-import-meta.cjs');
 const { extractGlyphFeatures } = require('./glyph-features.cjs');
 const { saveCoverFile, coverExists, extractAndStoreCover, getCoverPath } = require('./covers.cjs');
@@ -371,7 +372,8 @@ app.whenReady().then(async () => {
 
   ipcMain.handle('senza:glyph-fingerprint', async (_, payload) => {
     const libraryRoot = getLibraryRoot();
-    return fingerprintFile(libraryRoot, { filePath: payload?.filePath });
+    const filePath = resolveUnderLibraryRoot(libraryRoot, payload?.filePath);
+    return fingerprintFile(libraryRoot, { filePath });
   });
 
   ipcMain.handle('senza:glyph-download-tools', async () => downloadChromaprintTools());
@@ -429,10 +431,16 @@ app.whenReady().then(async () => {
   ipcMain.handle('senza:import-paths', (_, paths) => importPaths(paths));
 
   ipcMain.handle('senza:open-path', (_, filePath) => {
-    shell.showItemInFolder(filePath);
+    const libraryRoot = getLibraryRoot();
+    const safePath = resolveUnderLibraryRoot(libraryRoot, filePath);
+    shell.showItemInFolder(safePath);
   });
 
-  ipcMain.handle('senza:file-url', (_, filePath) => pathToFileURL(filePath).href);
+  ipcMain.handle('senza:file-url', (_, filePath) => {
+    const libraryRoot = getLibraryRoot();
+    const safePath = resolveUnderLibraryRoot(libraryRoot, filePath);
+    return pathToFileURL(safePath).href;
+  });
 
   ipcMain.handle('senza:window-minimize', () => mainWindow?.minimize());
   ipcMain.handle('senza:window-toggle-maximize', () => {
@@ -446,7 +454,11 @@ app.whenReady().then(async () => {
   });
   ipcMain.handle('senza:window-close', () => mainWindow?.close());
 
-  ipcMain.handle('senza:read-tags', (_, filePath) => readTags(filePath));
+  ipcMain.handle('senza:read-tags', (_, filePath) => {
+    const libraryRoot = getLibraryRoot();
+    const safePath = resolveUnderLibraryRoot(libraryRoot, filePath);
+    return readTags(safePath);
+  });
 
   ipcMain.handle('senza:cover-url', async (_, trackId) => {
     const root = await ensureLibrary();
@@ -587,8 +599,10 @@ app.whenReady().then(async () => {
   });
 
   ipcMain.handle('senza:read-file-binary', async (_, filePath) => {
-    if (!filePath || !existsSync(filePath)) return null;
-    const buf = await fs.readFile(filePath);
+    const libraryRoot = getLibraryRoot();
+    const safePath = resolveUnderLibraryRoot(libraryRoot, filePath);
+    if (!existsSync(safePath)) return null;
+    const buf = await fs.readFile(safePath);
     return Array.from(buf);
   });
 
