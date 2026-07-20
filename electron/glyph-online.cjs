@@ -11,7 +11,7 @@ const execFileAsync = promisify(execFile);
 
 const MB_BASE = 'https://musicbrainz.org/ws/2';
 const ACOUSTID_BASE = 'https://api.acoustid.org/v2/lookup';
-const USER_AGENT = 'Senza/1.1.0 (krwg; Glyph metadata)';
+const USER_AGENT = 'Senza/0.1.0 (Floke Studio; Glyph metadata)';
 
 let mbQueue = Promise.resolve();
 let lastMbAt = 0;
@@ -62,7 +62,7 @@ function cacheDir(libraryRoot) {
 }
 
 function cacheKey(parts) {
-  return crypto.createHash('sha1').update(parts.join('\0)).digest('hex');
+  return crypto.createHash('sha1').update(parts.join('\0')).digest('hex');
 }
 
 async function readCache(libraryRoot, ns, key) {
@@ -95,7 +95,7 @@ async function writeCache(libraryRoot, ns, key, payload, ttlDays = 30) {
 
 function escLucene(s) {
   return String(s || '')
-    .replace(/\\g, '\\\\')
+    .replace(/\\/g, '\\\\')
     .replace(/"/g, '\\"')
     .trim();
 }
@@ -113,7 +113,7 @@ function mapRecording(rec) {
   const releases = rec.releases || [];
   const rel = releases[0];
   const date = rel?.date || '';
-  const year = (date.match(/\b19|20)\d2}\b) || [])[0] || '';
+  const year = (date.match(/\b(19|20)\d{2}\b/) || [])[0] || '';
   return {
     title: rec.title || '',
     artist: artistFromCredit(rec['artist-credit']),
@@ -217,7 +217,7 @@ async function runFpcalc(filePath) {
   });
   const line = String(stdout || '')
     .trim()
-    .split('\n)
+    .split('\n')
     .pop();
   const data = JSON.parse(line);
   return {
@@ -370,6 +370,7 @@ function getOnlineStatus() {
   };
 }
 
+/** Local chromaprint fingerprint (cached) — for duplicate detection, no API key. */
 async function fingerprintFile(libraryRoot, { filePath }) {
   if (!filePath || !fsSync.existsSync(filePath)) {
     return { ok: false, error: 'file not found' };
