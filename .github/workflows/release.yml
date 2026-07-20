@@ -81,10 +81,63 @@ jobs:
           path: artifacts
           merge-multiple: true
 
+      - name: Resolve release notes
+        id: notes
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            echo "Unexpected tag format: $TAG (expected vX.Y.Z)"
+            exit 1
+          fi
+
+          CODENAME=$(node -e "const r=require('./senza.release.json'); process.stdout.write(String(r.codename||'').trim())")
+          if [[ -z "$CODENAME" ]]; then
+            echo "senza.release.json is missing codename"
+            exit 1
+          fi
+          SLUG=$(echo "$CODENAME" | tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9-')
+
+          CANDIDATES=(
+            "docs/release-notes-v${VERSION}-${SLUG}-github.md"
+            "docs/release-notes-v${VERSION}-github.md"
+          )
+          NOTES=""
+          for f in "${CANDIDATES[@]}"; do
+            if [[ -f "$f" ]]; then
+              NOTES="$f"
+              break
+            fi
+          done
+
+          if [[ -z "$NOTES" ]]; then
+            shopt -s nullglob
+            MATCHES=(docs/release-notes-v"${VERSION}"-*-github.md)
+            if (( ${#MATCHES[@]} == 1 )); then
+              NOTES="${MATCHES[0]}"
+            elif (( ${#MATCHES[@]} > 1 )); then
+              echo "Multiple release note files for v${VERSION}:"
+              printf ' - %s\n' "${MATCHES[@]}"
+              echo "Expected primary: docs/release-notes-v${VERSION}-${SLUG}-github.md"
+              exit 1
+            fi
+          fi
+
+          if [[ -z "$NOTES" || ! -f "$NOTES" ]]; then
+            echo "Missing release notes for tag ${TAG}."
+            echo "Add docs/release-notes-v${VERSION}-${SLUG}-github.md (codename from senza.release.json)."
+            exit 1
+          fi
+
+          echo "Using release notes: $NOTES"
+          echo "path=$NOTES" >> "$GITHUB_OUTPUT"
+
       - uses: softprops/action-gh-release@v2
         with:
           files: artifacts/**
           generate_release_notes: false
-          body_path: docs/release-notes-v1.1.0-legato-github.md
+          body_path: ${{ steps.notes.outputs.path }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
