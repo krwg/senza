@@ -12,7 +12,7 @@ const fs = require('fs/promises');
 const { readTags, writeTags } = require('./tags.cjs');
 const { resolveLibraryAudioPath } = require('./import.cjs');
 const { resolveUnderLibraryRoot } = require('./lib/path-guards.cjs');
-const { validateSaveState } = require('./state-validator.cjs');
+const { validateSaveState, validateTrack } = require('./state-validator.cjs');
 const { normalizeImportMeta } = require('./glyph-import-meta.cjs');
 const { extractGlyphFeatures } = require('./glyph-features.cjs');
 const { saveCoverFile, coverExists, extractAndStoreCover, getCoverPath } = require('./covers.cjs');
@@ -92,25 +92,54 @@ async function ensureLibrary() {
   return root;
 }
 
+function defaultState() {
+  return {
+    tracks: [],
+    queue: [],
+    queueIndex: 0,
+    playlists: [],
+    playHistory: [],
+    settings: { theme: 'dark', locale: 'en', collectionMode: false, volume: 0.85, clickLock: false },
+    profile: { displayName: 'senza-listener', avatarSeed: 'senza', useCustomAvatar: false },
+  };
+}
+
+function sanitizeLoadedState(parsed, libraryRoot) {
+  const result = validateSaveState(parsed, libraryRoot);
+  if (result.ok) return result.state;
+
+  // Soft-recover stored state: drop tracks whose paths escape the library.
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed) || !Array.isArray(parsed.tracks)) {
+    console.error('[senza] stored state invalid:', result.reason);
+    return null;
+  }
+  const kept = [];
+  for (let i = 0; i < parsed.tracks.length; i += 1) {
+    const trackResult = validateTrack(parsed.tracks[i], libraryRoot, i);
+    if (trackResult.ok) kept.push(trackResult.track);
+    else console.error('[senza] dropping stored track:', trackResult.reason);
+  }
+  const retry = validateSaveState({ ...parsed, tracks: kept }, libraryRoot);
+  if (!retry.ok) {
+    console.error('[senza] stored state unrecoverable:', retry.reason);
+    return null;
+  }
+  return retry.state;
+}
+
 async function loadState() {
   try {
     const raw = await fs.readFile(getStatePath(), 'utf8');
-    const state = JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    const sanitized = sanitizeLoadedState(parsed, getLibraryRoot());
+    const state = sanitized || defaultState();
     if (!state.settings) state.settings = { theme: 'dark', locale: 'en', collectionMode: false, volume: 0.85, clickLock: false };
     if (!state.profile) state.profile = { displayName: 'senza-listener', avatarSeed: 'senza', useCustomAvatar: false };
     if (!state.playlists) state.playlists = [];
     if (state.queueIndex === undefined) state.queueIndex = 0;
     return state;
   } catch {
-    return {
-      tracks: [],
-      queue: [],
-      queueIndex: 0,
-      playlists: [],
-      playHistory: [],
-      settings: { theme: 'dark', locale: 'en', collectionMode: false, volume: 0.85, clickLock: false },
-      profile: { displayName: 'senza-listener', avatarSeed: 'senza', useCustomAvatar: false },
-    };
+    return defaultState();
   }
 }
 
